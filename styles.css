@@ -1914,3 +1914,108 @@ ul {
     padding: 20px 18px;
   }
 }
+
+/* =========================================
+   THEME TOGGLE
+   ========================================= */
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  padding: 10px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.theme-toggle:hover {
+  color: var(--accent);
+  border-color: var(--border-accent);
+  background: var(--accent-muted);
+}
+
+.theme-toggle svg {
+  width: 18px;
+  height: 18px;
+  display: none;
+}
+
+html .theme-toggle .icon-sun,
+html[data-theme="dark"] .theme-toggle .icon-sun {
+  display: block;
+}
+
+html[data-theme="light"] .theme-toggle .icon-sun {
+  display: none;
+}
+
+html[data-theme="light"] .theme-toggle .icon-moon {
+  display: block;
+}
+
+/* =========================================
+   LIGHT THEME
+   ========================================= */
+html[data-theme="light"] {
+  --bg-primary: #f7f6fb;
+  --bg-secondary: #efedf6;
+  --bg-tertiary: #e7e4f0;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f2effa;
+  --bg-elevated: #ffffff;
+
+  --text-primary: #181422;
+  --text-secondary: #4d4663;
+  --text-tertiary: #7b7591;
+  --text-accent: #8b5cf6;
+
+  --border-subtle: rgba(24, 20, 34, 0.08);
+  --border-light: rgba(24, 20, 34, 0.16);
+  --border-accent: rgba(168, 85, 247, 0.4);
+
+  --accent-glow: rgba(168, 85, 247, 0.16);
+  --gradient-card: linear-gradient(135deg, rgba(168, 85, 247, 0.12) 0%, rgba(109, 40, 217, 0.06) 100%);
+}
+
+/* Navbar becomes translucent light when scrolled */
+html[data-theme="light"] .navbar.scrolled {
+  background: rgba(247, 246, 251, 0.92);
+}
+
+/* Ghost buttons on light surfaces */
+html[data-theme="light"] .btn-ghost {
+  background: rgba(24, 20, 34, 0.05);
+}
+
+html[data-theme="light"] .btn-ghost:hover {
+  background: rgba(24, 20, 34, 0.08);
+}
+
+/* Step numbers readable on light cards */
+html[data-theme="light"] .step-number {
+  color: rgba(168, 85, 247, 0.3);
+}
+
+/* Hero keeps its dark photo background, so force light text */
+html[data-theme="light"] .hero-title,
+html[data-theme="light"] .hero-subtitle,
+html[data-theme="light"] .hero-cta-note {
+  color: #ffffff;
+}
+
+html[data-theme="light"] .hero-subtitle {
+  color: #a9a4b8;
+}
+
+html[data-theme="light"] .hero-cta-note {
+  color: #8b85a0;
+}
+
+html[data-theme="light"] .hero-badge {
+  color: #c084fc;
+}

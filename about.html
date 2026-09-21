@@ -9,6 +9,18 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <script>
+    // Resolve and apply the theme before the page paints to avoid a flash.
+    // Precedence: explicit user choice (localStorage) > browser/OS preference.
+    (function () {
+      var saved = null;
+      try { saved = localStorage.getItem('theme'); } catch (e) {}
+      var theme = saved === 'light' || saved === 'dark'
+        ? saved
+        : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
 </head>
 <body>
 
@@ -30,6 +42,12 @@
         <li><a href="about.html" class="active">About Us</a></li>
         <li><a href="index.html#contact">Contact</a></li>
         <li><a href="#" class="nav-cta" data-open-apply>Register Free</a></li>
+        <li>
+          <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark or light theme">
+            <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+            <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          </button>
+        </li>
       </ul>
     </div>
   </nav>
@@ -311,6 +329,30 @@
   </div>
 
   <script>
+    // Theme toggle
+    const themeToggle = document.getElementById('themeToggle');
+
+    // Auto-update when the browser/OS theme changes, unless the user explicitly chose a theme.
+    const themeMedia = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)');
+    if (themeMedia && typeof themeMedia.addEventListener === 'function') {
+      themeMedia.addEventListener('change', (e) => {
+        try {
+          if (localStorage.getItem('theme') === 'light' || localStorage.getItem('theme') === 'dark') return;
+        } catch (err) {}
+        document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+      });
+    }
+
+    if (themeToggle) {
+      themeToggle.addEventListener('click', () => {
+        const current = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', current);
+        localStorage.setItem('theme', current);
+        navLinks.classList.remove('active');
+        navToggle.classList.remove('active');
+      });
+    }
+
     // Apply as a Learner modal
     const applyModal = document.getElementById('applyModal');
     const applyModalClose = document.getElementById('applyModalClose');
