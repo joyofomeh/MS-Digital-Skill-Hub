@@ -445,7 +445,12 @@ ul {
   display: flex;
   gap: 16px;
   margin-bottom: 48px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+}
+
+.hero-actions .btn {
+  flex: 1 1 0;
+  min-width: 0;
 }
 
 .hero-stats {
@@ -827,14 +832,17 @@ ul {
   gap: 40px;
   align-items: center;
   max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .about-title {
-  text-align: left;
+  text-align: center;
 }
 
 .about-content .section-tag {
   margin-bottom: 20px;
+  text-align: center;
 }
 
 .about-text {
@@ -842,6 +850,7 @@ ul {
   color: var(--text-secondary);
   line-height: 1.8;
   margin-bottom: 20px;
+  text-align: center;
 }
 
 .about-mission {
@@ -853,6 +862,7 @@ ul {
   border-radius: var(--border-radius-lg);
   margin-top: 32px;
   margin-bottom: 24px;
+  justify-content: center;
 }
 
 .about-mission-icon {
@@ -885,6 +895,7 @@ ul {
 .about-location {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 10px;
   font-size: var(--font-size-sm);
   color: var(--text-tertiary);
@@ -1309,6 +1320,156 @@ ul {
 }
 
 /* =========================================
+   APPLY MODAL
+   ========================================= */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: rgba(7, 6, 11, 0.8);
+  backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--transition-base), visibility var(--transition-base);
+}
+
+.modal-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal {
+  position: relative;
+  width: 100%;
+  max-width: 560px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-light);
+  border-radius: var(--border-radius-xl);
+  padding: 48px 40px;
+  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.5);
+  text-align: center;
+  transform: translateY(20px) scale(0.98);
+  transition: transform var(--transition-base);
+}
+
+.modal-overlay.active .modal {
+  transform: translateY(0) scale(1);
+}
+
+.modal-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  color: var(--text-secondary);
+  font-size: 14px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.modal-close:hover {
+  color: var(--text-primary);
+  border-color: var(--border-accent);
+  background: var(--accent-muted);
+}
+
+.modal-title {
+  font-size: var(--font-size-2xl);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.modal-subtitle {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  margin-bottom: 32px;
+}
+
+.modal-options {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.modal-option {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--border-radius);
+  text-align: left;
+  transition: all var(--transition-base);
+}
+
+.modal-option:hover {
+  border-color: var(--border-accent);
+  background: var(--bg-card-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(168, 85, 247, 0.12);
+}
+
+.modal-option-icon {
+  width: 52px;
+  height: 52px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent-muted);
+  border-radius: 14px;
+  color: var(--accent);
+}
+
+.modal-option-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.modal-option-title {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.modal-option-desc {
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+}
+
+.modal-option-arrow {
+  color: var(--text-tertiary);
+  font-size: var(--font-size-xl);
+  transition: color var(--transition-fast), transform var(--transition-fast);
+}
+
+.modal-option:hover .modal-option-arrow {
+  color: var(--accent);
+  transform: translateX(4px);
+}
+
+@media (max-width: 480px) {
+  .modal {
+    padding: 40px 24px;
+  }
+}
+
+/* =========================================
    FOOTER
    ========================================= */
 .footer {
@@ -1601,7 +1762,8 @@ ul {
   }
 
   .hero-actions {
-    flex-direction: column;
+    flex-direction: row;
+    gap: 10px;
   }
 
   .hero-stats {
