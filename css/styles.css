@@ -346,7 +346,7 @@ ul {
   min-height: 90vh;
   display: flex;
   align-items: center;
-  background-image: url('container/image.png');
+  background-image: url('../assets/images/bg.png');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
