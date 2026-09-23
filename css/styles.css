@@ -1,51 +1,51 @@
 /* =========================================
    MS Digital Skill Hub - Design System
-   Dark Theme | Purple Accent
+   Light Theme | Burgundy Accent
    ========================================= */
 
 /* --- CSS Custom Properties --- */
 :root {
   /* Backgrounds */
-  --bg-primary: #07060b;
-  --bg-secondary: #0d0b14;
-  --bg-tertiary: #13111c;
-  --bg-card: #161424;
-  --bg-card-hover: #1c1930;
-  --bg-elevated: #1e1b2e;
+  --bg-primary: #faf7f5;
+  --bg-secondary: #f3ede9;
+  --bg-tertiary: #efe7e2;
+  --bg-card: #ffffff;
+  --bg-card-hover: #fffdfc;
+  --bg-elevated: #ffffff;
 
-  /* Purple Palette */
-  --purple-50: #faf5ff;
-  --purple-100: #f3e8ff;
-  --purple-200: #e9d5ff;
-  --purple-300: #d8b4fe;
-  --purple-400: #c084fc;
-  --purple-500: #a855f7;
-  --purple-600: #9333ea;
-  --purple-700: #7e22ce;
-  --purple-800: #6b21a8;
-  --purple-900: #581c87;
+  /* Burgundy Palette */
+  --burgundy-50: #f9f0f3;
+  --burgundy-100: #f2dfe6;
+  --burgundy-200: #e2b6c5;
+  --burgundy-300: #d08ba0;
+  --burgundy-400: #b85c78;
+  --burgundy-500: #7a1f3d;
+  --burgundy-600: #6b1a35;
+  --burgundy-700: #581529;
+  --burgundy-800: #4a1025;
+  --burgundy-900: #3a0c1d;
 
   /* Accent */
-  --accent: #a855f7;
-  --accent-hover: #c084fc;
-  --accent-muted: rgba(168, 85, 247, 0.15);
-  --accent-glow: rgba(168, 85, 247, 0.25);
+  --accent: #7a1f3d;
+  --accent-hover: #4a1025;
+  --accent-muted: rgba(122, 31, 61, 0.08);
+  --accent-glow: rgba(122, 31, 61, 0.14);
 
   /* Text */
-  --text-primary: #f1f0f5;
-  --text-secondary: #a09bb0;
-  --text-tertiary: #6b6580;
-  --text-accent: #c084fc;
+  --text-primary: #171717;
+  --text-secondary: #5a5557;
+  --text-tertiary: rgba(23, 23, 23, 0.6);
+  --text-accent: #7a1f3d;
 
   /* Borders */
-  --border-subtle: rgba(255, 255, 255, 0.06);
-  --border-light: rgba(255, 255, 255, 0.1);
-  --border-accent: rgba(168, 85, 247, 0.3);
+  --border-subtle: rgba(23, 23, 23, 0.08);
+  --border-light: rgba(23, 23, 23, 0.14);
+  --border-accent: rgba(122, 31, 61, 0.28);
 
   /* Gradients */
-  --gradient-hero: linear-gradient(135deg, #a855f7 0%, #7c3aed 50%, #6d28d9 100%);
-  --gradient-card: linear-gradient(135deg, rgba(168, 85, 247, 0.08) 0%, rgba(109, 40, 217, 0.04) 100%);
-  --gradient-cta: linear-gradient(135deg, #7c3aed 0%, #a855f7 50%, #9333ea 100%);
+  --gradient-hero: linear-gradient(135deg, #b85c78 0%, #7a1f3d 100%);
+  --gradient-card: linear-gradient(135deg, rgba(122, 31, 61, 0.07) 0%, rgba(74, 16, 37, 0.04) 100%);
+  --gradient-cta: linear-gradient(135deg, #7a1f3d 0%, #4a1025 100%);
 
   /* Typography */
   --font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -190,14 +190,15 @@ ul {
 }
 
 .btn-primary {
-  background: var(--gradient-hero);
-  color: white;
-  box-shadow: 0 4px 24px rgba(168, 85, 247, 0.3), 0 1px 3px rgba(0, 0, 0, 0.2);
+  background: #7a1f3d;
+  color: #ffffff;
+  box-shadow: 0 4px 24px rgba(122, 31, 61, 0.3), 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 .btn-primary:hover {
+  background: #4a1025;
   transform: translateY(-2px);
-  box-shadow: 0 8px 32px rgba(168, 85, 247, 0.45), 0 2px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 8px 32px rgba(122, 31, 61, 0.45), 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .btn-outline {
@@ -214,13 +215,13 @@ ul {
 }
 
 .btn-ghost {
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(23, 23, 23, 0.05);
   color: var(--text-primary);
   border: 1px solid var(--border-subtle);
 }
 
 .btn-ghost:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(23, 23, 23, 0.09);
   border-color: var(--border-light);
 }
 
@@ -242,7 +243,7 @@ ul {
 }
 
 .navbar.scrolled {
-  background: rgba(7, 6, 11, 0.92);
+  background: rgba(250, 247, 245, 0.92);
   backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--border-subtle);
   padding: 14px 0;
@@ -262,9 +263,10 @@ ul {
 }
 
 .logo-image {
-  height: 80px;
-  width: auto;
+  height: 210px;
+  width: 210px;
   border-radius: 10px;
+  object-fit: contain;
 }
 
 .logo-text {
@@ -292,14 +294,15 @@ ul {
 
 .nav-cta {
   padding: 10px 24px !important;
-  background: var(--gradient-hero);
-  color: white !important;
+  background: #7a1f3d;
+  color: #ffffff !important;
   border-radius: 10px;
   font-weight: 600 !important;
 }
 
 .nav-cta:hover {
-  box-shadow: 0 4px 20px rgba(168, 85, 247, 0.35);
+  background: #4a1025;
+  box-shadow: 0 4px 20px rgba(122, 31, 61, 0.35);
   transform: translateY(-1px);
 }
 
@@ -356,7 +359,7 @@ ul {
   content: '';
   position: absolute;
   inset: 0;
-  background: rgba(7, 6, 11, 0.75);
+  background: rgba(23, 23, 23, 0.78);
   z-index: 0;
 }
 
@@ -376,7 +379,7 @@ ul {
 .hero-shape-1 {
   width: 600px;
   height: 600px;
-  background: rgba(168, 85, 247, 0.12);
+  background: rgba(184, 92, 120, 0.16);
   top: -200px;
   right: -100px;
 }
@@ -384,7 +387,7 @@ ul {
 .hero-shape-2 {
   width: 400px;
   height: 400px;
-  background: rgba(109, 40, 217, 0.08);
+  background: rgba(122, 31, 61, 0.14);
   bottom: -100px;
   left: -100px;
 }
@@ -392,7 +395,7 @@ ul {
 .hero-shape-3 {
   width: 300px;
   height: 300px;
-  background: rgba(139, 92, 246, 0.06);
+  background: rgba(184, 92, 120, 0.08);
   top: 40%;
   left: 40%;
 }
@@ -409,12 +412,12 @@ ul {
 .hero-badge {
   display: inline-block;
   padding: 8px 20px;
-  background: var(--accent-muted);
-  border: 1px solid var(--border-accent);
+  background: rgba(184, 92, 120, 0.16);
+  border: 1px solid rgba(184, 92, 120, 0.45);
   border-radius: 100px;
   font-size: var(--font-size-sm);
   font-weight: 500;
-  color: var(--accent);
+  color: #b85c78;
   margin-bottom: 28px;
   letter-spacing: 0.5px;
 }
@@ -425,6 +428,7 @@ ul {
   line-height: 1.1;
   margin-bottom: 20px;
   letter-spacing: -0.02em;
+  color: #ffffff;
 }
 
 .hero-title-accent {
@@ -436,7 +440,7 @@ ul {
 
 .hero-subtitle {
   font-size: var(--font-size-xl);
-  color: var(--text-secondary);
+  color: rgba(255, 255, 255, 0.88);
   margin-bottom: 40px;
   font-weight: 400;
 }
@@ -451,6 +455,18 @@ ul {
 .hero-actions .btn {
   flex: 1 1 0;
   min-width: 0;
+}
+
+/* Hero buttons always sit on the dark photo, so keep them light */
+.hero-actions .btn-outline {
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.55);
+}
+
+.hero-actions .btn-outline:hover {
+  color: #ffffff;
+  border-color: #b85c78;
+  background: rgba(184, 92, 120, 0.18);
 }
 
 .hero-stats {
@@ -490,7 +506,7 @@ ul {
 
 .hero-cta-note {
   font-size: var(--font-size-sm);
-  color: var(--text-tertiary);
+  color: rgba(255, 255, 255, 0.66);
   font-style: italic;
 }
 
@@ -602,20 +618,20 @@ ul {
   border-color: var(--border-accent);
   background: var(--bg-card-hover);
   transform: translateY(-4px);
-  box-shadow: 0 12px 40px rgba(168, 85, 247, 0.1);
+  box-shadow: 0 12px 40px rgba(122, 31, 61, 0.12);
 }
 
 .step-number {
   font-size: var(--font-size-4xl);
   font-weight: 800;
-  color: rgba(168, 85, 247, 0.15);
+  color: rgba(122, 31, 61, 0.12);
   line-height: 1;
   margin-bottom: 20px;
   transition: color var(--transition-base);
 }
 
 .step-card:hover .step-number {
-  color: rgba(168, 85, 247, 0.35);
+  color: rgba(122, 31, 61, 0.3);
 }
 
 .step-title {
@@ -671,8 +687,8 @@ ul {
 }
 
 .path-card-learner {
-  background: linear-gradient(135deg, rgba(168, 85, 247, 0.06) 0%, rgba(109, 40, 217, 0.03) 100%);
-  border-color: rgba(168, 85, 247, 0.15);
+  background: linear-gradient(135deg, rgba(122, 31, 61, 0.05) 0%, rgba(74, 16, 37, 0.03) 100%);
+  border-color: rgba(122, 31, 61, 0.18);
 }
 
 .path-card-recruiter {
@@ -768,7 +784,7 @@ ul {
 .testimonial-card:hover {
   border-color: var(--border-accent);
   transform: translateY(-4px);
-  box-shadow: 0 12px 40px rgba(168, 85, 247, 0.1);
+  box-shadow: 0 12px 40px rgba(122, 31, 61, 0.12);
 }
 
 .testimonial-image-wrapper {
@@ -947,7 +963,7 @@ ul {
 .cta-shape-1 {
   width: 500px;
   height: 500px;
-  background: rgba(168, 85, 247, 0.1);
+  background: rgba(122, 31, 61, 0.08);
   top: -200px;
   left: 50%;
   transform: translateX(-50%);
@@ -956,7 +972,7 @@ ul {
 .cta-shape-2 {
   width: 300px;
   height: 300px;
-  background: rgba(109, 40, 217, 0.08);
+  background: rgba(184, 92, 120, 0.06);
   bottom: -100px;
   right: 10%;
 }
@@ -1243,7 +1259,7 @@ ul {
 .mv-card:hover {
   border-color: var(--border-accent);
   transform: translateY(-4px);
-  box-shadow: 0 12px 40px rgba(168, 85, 247, 0.1);
+  box-shadow: 0 12px 40px rgba(122, 31, 61, 0.12);
 }
 
 .mv-label {
@@ -1291,7 +1307,7 @@ ul {
   border-color: var(--border-accent);
   background: var(--bg-card-hover);
   transform: translateY(-4px);
-  box-shadow: 0 12px 40px rgba(168, 85, 247, 0.1);
+  box-shadow: 0 12px 40px rgba(122, 31, 61, 0.12);
 }
 
 .value-icon {
@@ -1326,7 +1342,7 @@ ul {
   position: fixed;
   inset: 0;
   z-index: 2000;
-  background: rgba(7, 6, 11, 0.8);
+  background: rgba(23, 23, 23, 0.8);
   backdrop-filter: blur(12px);
   display: flex;
   align-items: center;
@@ -1419,7 +1435,7 @@ ul {
   border-color: var(--border-accent);
   background: var(--bg-card-hover);
   transform: translateY(-2px);
-  box-shadow: 0 8px 28px rgba(168, 85, 247, 0.12);
+  box-shadow: 0 8px 28px rgba(122, 31, 61, 0.12);
 }
 
 .modal-option-icon {
@@ -1474,8 +1490,16 @@ ul {
    ========================================= */
 .footer {
   padding: 80px 0 0;
-  background: var(--bg-primary);
-  border-top: 1px solid var(--border-subtle);
+  background: #171717;
+  border-top: 1px solid rgba(184, 92, 120, 0.3);
+  --bg-card: rgba(255, 255, 255, 0.06);
+  --border-subtle: rgba(255, 255, 255, 0.1);
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255, 255, 255, 0.82);
+  --text-tertiary: rgba(255, 255, 255, 0.66);
+  --accent: #b85c78;
+  --accent-muted: rgba(184, 92, 120, 0.16);
+  --border-accent: rgba(184, 92, 120, 0.45);
 }
 
 .footer-grid {
@@ -1959,63 +1983,60 @@ html[data-theme="light"] .theme-toggle .icon-moon {
 }
 
 /* =========================================
-   LIGHT THEME
+   DARK THEME
    ========================================= */
-html[data-theme="light"] {
-  --bg-primary: #f7f6fb;
-  --bg-secondary: #efedf6;
-  --bg-tertiary: #e7e4f0;
-  --bg-card: #ffffff;
-  --bg-card-hover: #f2effa;
-  --bg-elevated: #ffffff;
+html[data-theme="dark"] {
+  --bg-primary: #171717;
+  --bg-secondary: #1d1c1c;
+  --bg-tertiary: #262323;
+  --bg-card: #232020;
+  --bg-card-hover: #2b2727;
+  --bg-elevated: #262323;
 
-  --text-primary: #181422;
-  --text-secondary: #4d4663;
-  --text-tertiary: #7b7591;
-  --text-accent: #8b5cf6;
+  --accent: #b85c78;
+  --accent-hover: #c4708e;
+  --accent-muted: rgba(184, 92, 120, 0.14);
+  --accent-glow: rgba(184, 92, 120, 0.22);
 
-  --border-subtle: rgba(24, 20, 34, 0.08);
-  --border-light: rgba(24, 20, 34, 0.16);
-  --border-accent: rgba(168, 85, 247, 0.4);
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255, 255, 255, 0.82);
+  --text-tertiary: rgba(255, 255, 255, 0.55);
+  --text-accent: #b85c78;
 
-  --accent-glow: rgba(168, 85, 247, 0.16);
-  --gradient-card: linear-gradient(135deg, rgba(168, 85, 247, 0.12) 0%, rgba(109, 40, 217, 0.06) 100%);
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-light: rgba(255, 255, 255, 0.12);
+  --border-accent: rgba(184, 92, 120, 0.32);
+
+  --gradient-hero: linear-gradient(135deg, #b85c78 0%, #7a1f3d 100%);
+  --gradient-card: linear-gradient(135deg, rgba(184, 92, 120, 0.09) 0%, rgba(74, 16, 37, 0.05) 100%);
+  --gradient-cta: linear-gradient(135deg, #7a1f3d 0%, #4a1025 100%);
 }
 
-/* Navbar becomes translucent light when scrolled */
-html[data-theme="light"] .navbar.scrolled {
-  background: rgba(247, 246, 251, 0.92);
+/* Navbar becomes translucent dark when scrolled */
+html[data-theme="dark"] .navbar.scrolled {
+  background: rgba(23, 23, 23, 0.92);
 }
 
-/* Ghost buttons on light surfaces */
-html[data-theme="light"] .btn-ghost {
-  background: rgba(24, 20, 34, 0.05);
+/* Ghost buttons on dark surfaces */
+html[data-theme="dark"] .btn-ghost {
+  background: rgba(255, 255, 255, 0.06);
 }
 
-html[data-theme="light"] .btn-ghost:hover {
-  background: rgba(24, 20, 34, 0.08);
+html[data-theme="dark"] .btn-ghost:hover {
+  background: rgba(255, 255, 255, 0.1);
 }
 
-/* Step numbers readable on light cards */
-html[data-theme="light"] .step-number {
-  color: rgba(168, 85, 247, 0.3);
+/* Step numbers readable on dark cards */
+html[data-theme="dark"] .step-number {
+  color: rgba(184, 92, 120, 0.16);
 }
 
-/* Hero keeps its dark photo background, so force light text */
-html[data-theme="light"] .hero-title,
-html[data-theme="light"] .hero-subtitle,
-html[data-theme="light"] .hero-cta-note {
-  color: #ffffff;
+html[data-theme="dark"] .step-card:hover .step-number {
+  color: rgba(184, 92, 120, 0.34);
 }
 
-html[data-theme="light"] .hero-subtitle {
-  color: #a9a4b8;
-}
-
-html[data-theme="light"] .hero-cta-note {
-  color: #8b85a0;
-}
-
-html[data-theme="light"] .hero-badge {
-  color: #c084fc;
+/* Learner path card on dark surfaces */
+html[data-theme="dark"] .path-card-learner {
+  background: linear-gradient(135deg, rgba(184, 92, 120, 0.1) 0%, rgba(74, 16, 37, 0.05) 100%);
+  border-color: rgba(184, 92, 120, 0.28);
 }

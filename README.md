@@ -10,7 +10,7 @@ The site is split into organized assets and pages:
 - `about.html` - About us page
 - `css/styles.css` - Global styles including light and dark themes
 - `assets/images/` - Images used across the site
-  - `assets/images/logo.PNG` - Brand logo
+  - `assets/images/logo.jpg.png` - Brand logo
   - `assets/images/bg.png` - Hero background image
   - `assets/images/headshot.jpg` - Founder photo
   - `assets/images/testimonials/` - Testimonial images
