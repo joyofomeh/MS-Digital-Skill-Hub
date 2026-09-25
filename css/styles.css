@@ -263,7 +263,7 @@ ul {
 }
 
 .logo-image {
-  height: 210px;
+  /*height: 210px;*/
   width: 210px;
   border-radius: 10px;
   object-fit: contain;
