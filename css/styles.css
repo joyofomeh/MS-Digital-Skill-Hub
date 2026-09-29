@@ -2319,6 +2319,15 @@ html[data-theme="dark"] .path-card-learner {
   color: var(--text-tertiary);
 }
 
+.verify-registration {
+  margin: 24px 0 0;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-subtle);
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+  line-height: 1.7;
+}
+
 .verify-notice {
   margin-top: 20px;
   padding: 14px 18px;
