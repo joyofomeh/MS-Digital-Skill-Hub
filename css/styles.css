@@ -767,17 +767,134 @@ ul {
   background: linear-gradient(90deg, transparent, var(--border-accent), transparent);
 }
 
-.testimonials-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 24px;
+/* Marquee: a static wrapped row by default (safe without JS), switched to an
+   infinite horizontal track when JS adds .is-marquee to the viewport. */
+.testimonials-viewport {
+  --marquee-gap: 20px;
+  --marquee-card: 300px;
+  /* Every card is the same fixed height, sized to the tallest testimonial so the
+     longest one still fits its full text at the current font size and width. */
+  --marquee-card-h: 469px;
+  --marquee-duration: 58s;
+  --marquee-fade: clamp(24px, 3vw, 52px);
+  /* Number of identical copies of the testimonial set laid end to end. Three
+     keeps the track longer than any viewport can pan across, so the stream
+     never runs out and shows empty space at the loop point. The loop period is
+     always exactly one set (100% / copies), so the seam stays invisible. */
+  --marquee-copies: 3;
+  position: relative;
+  /* Full bleed: break out of the centred .container so the cards run almost to
+     both viewport edges instead of floating inside 1200px of empty space. */
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
 }
 
+.testimonials-track {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+}
+
+.testimonials-group {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--marquee-gap);
+}
+
+/* Infinite conveyor: N identical copies sit end to end with zero track gap, and
+   the track slides by exactly one set, so copy N is pixel-identical to copy 1
+   when the animation wraps. One continuous animation, no restart, no pause. */
+.testimonials-viewport.is-marquee {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 var(--marquee-fade), #000 calc(100% - var(--marquee-fade)), transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 var(--marquee-fade), #000 calc(100% - var(--marquee-fade)), transparent);
+}
+
+.testimonials-viewport.is-marquee .testimonials-track {
+  flex-wrap: nowrap;
+  /* no gap here: the spacing lives inside each group, so the two halves stay
+     exactly the same width and -50% lands precisely on the loop point */
+  gap: 0;
+  width: max-content;
+  animation: testimonial-scroll var(--marquee-duration) linear infinite;
+}
+
+.testimonials-viewport.is-marquee .testimonials-group {
+  flex-wrap: nowrap;
+  /* keeps the gap between the two sets identical to the gap between cards */
+  padding-right: var(--marquee-gap);
+}
+
+.testimonials-viewport.is-marquee .testimonial-card {
+  flex: 0 0 var(--marquee-card);
+  width: var(--marquee-card);
+}
+
+/* -100% resolves against the track's own width (N x one set), so dividing by N
+   travels exactly one set: the distance to the next identical copy. */
+@keyframes testimonial-scroll {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(calc(-100% / var(--marquee-copies)), 0, 0);
+  }
+}
+
+.testimonials-viewport.is-marquee:hover .testimonials-track,
+.testimonials-viewport.is-marquee:focus-within .testimonials-track {
+  animation-play-state: paused;
+}
+
+/* Reduced motion: no auto-scrolling, no clipped content — the set is shown
+   once as a static, wrapped row. */
+@media (prefers-reduced-motion: reduce) {
+  .testimonials-viewport.is-marquee {
+    overflow: visible;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  .testimonials-viewport.is-marquee .testimonials-track {
+    animation: none;
+    width: auto;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .testimonials-viewport.is-marquee .testimonials-group {
+    flex: 1 1 100%;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding-right: 0;
+  }
+
+  .testimonials-viewport.is-marquee .testimonials-group[aria-hidden="true"] {
+    display: none;
+  }
+
+  .testimonial-image {
+    transition: none;
+  }
+
+  .testimonial-card:hover .testimonial-image {
+    transform: none;
+  }
+}
+
+/* Width comes from --marquee-card and height from --marquee-card-h, so all
+   cards are identical and line up perfectly. Height is uniform by declaration
+   rather than by stretching, and the long testimonial fits inside the same box. */
 .testimonial-card {
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
   border-radius: var(--border-radius-lg);
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: var(--marquee-card-h);
   transition: all var(--transition-base);
 }
 
@@ -787,13 +904,15 @@ ul {
   box-shadow: 0 12px 40px rgba(122, 31, 61, 0.12);
 }
 
+/* Profile image is deliberately still 160px - only the surrounding space shrinks. */
 .testimonial-image-wrapper {
   width: 160px;
   height: 160px;
-  margin: 28px auto 0;
+  margin: 20px auto 0;
   border-radius: 50%;
   overflow: hidden;
   background: var(--bg-tertiary);
+  flex-shrink: 0;
 }
 
 .testimonial-image {
@@ -801,30 +920,89 @@ ul {
   height: 100%;
   object-fit: cover;
   object-position: center 20%;
-  transform: scale(2.2);
   transition: transform var(--transition-slow);
 }
 
+/* The original portraits are large full-body/vertical photos, so they need the
+   original zoom to read well inside a small circular frame. The newer headshots
+   are already tightly cropped and must stay unzoomed. */
+.testimonial-image-legacy {
+  transform: scale(2.2);
+}
+
 .testimonial-card:hover .testimonial-image {
-  transform: scale(2.3);
+  transform: scale(1.06);
+}
+
+/* Keep the legacy framing on hover (2.2 x 1.06) instead of dropping to 1.06,
+   which would snap the photo out of its zoom. */
+.testimonial-card:hover .testimonial-image-legacy {
+  transform: scale(2.32);
+}
+
+/* Testimonial shared without a photo: text only, no placeholder avatar. */
+.testimonial-card-anonymous {
+  background: var(--gradient-card);
+  border-color: var(--border-accent);
+}
+
+/* The longest testimonial sets the row height. Its text is kept fully intact
+   and readable, so the box is only trimmed, never clamped or truncated. */
+.testimonial-card-anonymous .testimonial-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex: 1;
+  padding: 20px;
+}
+
+.testimonial-card-anonymous .testimonial-text::before {
+  content: '\201C';
+  display: block;
+  font-size: 34px;
+  line-height: 0.8;
+  font-style: normal;
+  color: var(--accent);
+  margin-bottom: 8px;
+}
+
+.testimonial-card-anonymous .testimonial-text {
+  margin-bottom: 14px;
+}
+
+.testimonial-card-anonymous .testimonial-name {
+  display: inline-block;
+  padding: 5px 16px;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--accent);
+  background: var(--accent-muted);
+  border: 1px solid var(--border-accent);
+  border-radius: 100px;
 }
 
 .testimonial-content {
-  padding: 28px 24px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 .testimonial-text {
   font-size: var(--font-size-sm);
   color: var(--text-secondary);
-  line-height: 1.8;
-  margin-bottom: 20px;
+  line-height: 1.65;
+  margin-bottom: 14px;
   font-style: italic;
 }
 
 .testimonial-author {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
+  margin-top: auto;
 }
 
 .testimonial-name {
@@ -1637,9 +1815,10 @@ ul {
 .steps-grid .animate-target:nth-child(3) { transition-delay: 0.2s; }
 .steps-grid .animate-target:nth-child(4) { transition-delay: 0.3s; }
 
-.testimonials-grid .animate-target:nth-child(2) { transition-delay: 0.1s; }
-.testimonials-grid .animate-target:nth-child(3) { transition-delay: 0.2s; }
-.testimonials-grid .animate-target:nth-child(4) { transition-delay: 0.3s; }
+.testimonials-group .animate-target:nth-child(2) { transition-delay: 0.1s; }
+.testimonials-group .animate-target:nth-child(3) { transition-delay: 0.2s; }
+.testimonials-group .animate-target:nth-child(4) { transition-delay: 0.3s; }
+.testimonials-group .animate-target:nth-child(5) { transition-delay: 0.4s; }
 
 /* =========================================
    RESPONSIVE DESIGN
@@ -1676,8 +1855,10 @@ ul {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .testimonials-grid {
-    grid-template-columns: repeat(2, 1fr);
+  .testimonials-viewport {
+    --marquee-card: 270px;
+    --marquee-card-h: 515px;
+    --marquee-duration: 56s;
   }
 
   .footer-grid {
@@ -1818,10 +1999,11 @@ ul {
     padding: 36px 28px;
   }
 
-  .testimonials-grid {
-    grid-template-columns: 1fr;
-    max-width: 480px;
-    margin: 0 auto;
+  .testimonials-viewport {
+    --marquee-card: min(78vw, 300px);
+    --marquee-gap: 16px;
+    --marquee-card-h: 469px;
+    --marquee-duration: 60s;
   }
 
   .testimonial-image-wrapper {
@@ -2039,4 +2221,275 @@ html[data-theme="dark"] .step-card:hover .step-number {
 html[data-theme="dark"] .path-card-learner {
   background: linear-gradient(135deg, rgba(184, 92, 120, 0.1) 0%, rgba(74, 16, 37, 0.05) 100%);
   border-color: rgba(184, 92, 120, 0.28);
+}
+
+/* =========================================
+   CERTIFICATE VERIFICATION
+   ========================================= */
+.verify {
+  padding: var(--section-padding) 0;
+  background: var(--bg-primary);
+  position: relative;
+}
+
+.verify::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border-accent), transparent);
+}
+
+.verify-card {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 44px 40px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--border-radius-xl);
+  box-shadow: 0 12px 40px rgba(122, 31, 61, 0.08);
+}
+
+.verify-field {
+  margin-bottom: 20px;
+}
+
+.verify-label {
+  display: block;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 10px;
+}
+
+.verify-input {
+  width: 100%;
+  padding: 15px 18px;
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  font-weight: 500;
+  color: var(--text-primary);
+  background: var(--bg-primary);
+  border: 1.5px solid var(--border-light);
+  border-radius: var(--border-radius);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast);
+}
+
+.verify-input::placeholder {
+  color: var(--text-tertiary);
+  font-weight: 400;
+}
+
+.verify-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  background: var(--bg-card);
+  box-shadow: 0 0 0 4px var(--accent-muted);
+}
+
+.verify-hint {
+  margin-top: 10px;
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+  line-height: 1.6;
+}
+
+.verify-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-top: 28px;
+}
+
+.verify-submit {
+  min-width: 220px;
+}
+
+.verify-submit[disabled] {
+  opacity: 0.65;
+  cursor: progress;
+  transform: none;
+}
+
+.verify-form-note {
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+}
+
+.verify-notice {
+  margin-top: 20px;
+  padding: 14px 18px;
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--border-radius);
+  line-height: 1.7;
+}
+
+.verify-notice[hidden],
+.verify-result[hidden],
+.verify-details[hidden],
+.verify-footnote[hidden] {
+  display: none;
+}
+
+.verify-result {
+  margin-top: 36px;
+  padding-top: 32px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.verify-status {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 24px 26px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-accent);
+  border-left: 4px solid var(--accent);
+  border-radius: var(--border-radius-lg);
+  margin-bottom: 28px;
+}
+
+.verify-status-icon {
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent-muted);
+  border: 1px solid var(--border-accent);
+  border-radius: 14px;
+  color: var(--accent);
+}
+
+.verify-status-title {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.verify-status-text {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+/* Neutral variant for a certificate that is not in the registry */
+.verify-status-neutral {
+  border-color: var(--border-light);
+  border-left-color: var(--text-secondary);
+}
+
+.verify-status-neutral .verify-status-icon {
+  background: var(--bg-tertiary);
+  border-color: var(--border-subtle);
+  color: var(--text-secondary);
+}
+
+.verify-details {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1px;
+  margin: 0;
+  background: var(--border-subtle);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+}
+
+.verify-detail {
+  background: var(--bg-card);
+  padding: 22px 24px;
+}
+
+.verify-detail-wide {
+  grid-column: 1 / -1;
+}
+
+.verify-detail-label {
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+
+.verify-detail-value {
+  margin: 0;
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  color: var(--text-primary);
+  word-break: break-word;
+}
+
+.verify-value-status {
+  display: inline-block;
+  padding: 5px 16px;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--accent-muted);
+  border: 1px solid var(--border-accent);
+  border-radius: 100px;
+}
+
+.verify-footnote {
+  margin-top: 20px;
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+  line-height: 1.7;
+}
+
+.verify-footnote a {
+  color: var(--accent);
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .verify-card {
+    padding: 32px 24px;
+  }
+
+  .verify-details {
+    grid-template-columns: 1fr;
+  }
+
+  .verify-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .verify-submit {
+    width: 100%;
+  }
+
+  .verify-form-note {
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .verify-card {
+    padding: 26px 20px;
+  }
+
+  .verify-status {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 20px;
+  }
+
+  .verify-status-title {
+    font-size: var(--font-size-lg);
+  }
 }
