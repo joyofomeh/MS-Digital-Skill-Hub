@@ -153,7 +153,7 @@
 
             <div class="verify-detail verify-detail-wide">
               <dt class="verify-detail-label">Duration</dt>
-              <dd class="verify-detail-value" id="verifyProgramDuration">10-Week Intensive Program</dd>
+              <dd class="verify-detail-value" id="verifyProgramDuration">6 Weeks</dd>
             </div>
 
             <div class="verify-detail">
@@ -527,10 +527,8 @@
     }
 
     function isRegistryConfigured() {
-      return (
-        typeof VERIFICATION_CONFIG.sheetCsvUrl === 'string' &&
-        VERIFICATION_CONFIG.sheetCsvUrl.includes('google.com')
-      );
+      const endpoint = VERIFICATION_CONFIG.sheetCsvUrl;
+      return typeof endpoint === 'string' && endpoint.trim() !== '';
     }
 
     function formatDate(value) {
@@ -586,7 +584,8 @@
         program: clean(matchedRow[2]),
         completionDate: formatDate(clean(matchedRow[3])),
         dateOfIssue: formatDate(clean(matchedRow[4])),
-        status: clean(matchedRow[5]) || 'Valid'
+        status: clean(matchedRow[5]) || 'Valid',
+        trainingLevel: clean(matchedRow[7])
       };
     }
 
@@ -610,21 +609,81 @@
       verifyResultHead.classList.remove('verify-status-neutral');
     }
 
+    /* ---------- Training level resolution ---------- */
+
+    const TRAINING_LEVELS = {
+      foundational: {
+        level: 'Foundational',
+        duration: '6 Weeks'
+      },
+      advanced: {
+        level: 'Advanced',
+        duration: '12 Weeks'
+      }
+    };
+
+    function readTrainingLevel(record) {
+      if (!record || typeof record !== 'object') return '';
+      const raw =
+        record.trainingLevel ||
+        record.track ||
+        record.level ||
+        record.training ||
+        record['Training Level'] ||
+        '';
+      return String(raw).trim();
+    }
+
+    function normalizeTrainingLevel(value) {
+      const text = String(value || '').trim().toLowerCase();
+      if (!text) return '';
+      if (text.indexOf('advanced') !== -1 || text.indexOf('advance') !== -1) return 'advanced';
+      if (
+        text.indexOf('foundational') !== -1 ||
+        text.indexOf('foundation') !== -1 ||
+        text.indexOf('beginner') !== -1 ||
+        text.indexOf('basic') !== -1
+      ) return 'foundational';
+      return '';
+    }
+
     function renderVerified(record) {
+      const data = record && record.certificate && typeof record.certificate === 'object'
+        ? Object.assign({}, record.certificate, record)
+        : record;
+
       verifyResultHead.classList.remove('verify-status-neutral');
       verifyResultIcon.innerHTML = ICON_VERIFIED;
       verifyResultTitle.textContent = 'Certificate Verified';
       verifyResultText.textContent = 'This certificate was found in the MS Digital Skill Hub certificate registry.';
 
-      document.getElementById('verifyCertId').textContent = record.certificateId;
-      document.getElementById('verifyCertName').textContent = record.fullName;
-      document.getElementById('verifyCertProgram').textContent = record.program || '—';
-      document.getElementById('verifyCompletionDate').textContent = record.completionDate;
-      document.getElementById('verifyIssueDate').textContent = record.dateOfIssue;
+      document.getElementById('verifyCertId').textContent = data.certificateId || '—';
+      document.getElementById('verifyCertName').textContent = data.fullName || '—';
+      document.getElementById('verifyCompletionDate').textContent = data.completionDate || '—';
+      document.getElementById('verifyIssueDate').textContent = data.dateOfIssue || '—';
 
       const statusValue = document.getElementById('verifyStatusValue');
-      statusValue.textContent = record.status;
-      statusValue.classList.toggle('verify-value-status', /^valid$/i.test(record.status));
+      statusValue.textContent = data.status || '—';
+      statusValue.classList.toggle('verify-value-status', /^valid$/i.test(data.status || ''));
+
+      const programValue = document.getElementById('verifyCertProgram');
+      const durationValue = document.getElementById('verifyProgramDuration');
+      const baseProgram = String(data.program || '').trim();
+      const levelKey = normalizeTrainingLevel(readTrainingLevel(data));
+      const levelInfo = TRAINING_LEVELS[levelKey] || null;
+
+      if (baseProgram && levelInfo) {
+        programValue.textContent = baseProgram + ' ' + levelInfo.level + ' Training Programme';
+        durationValue.textContent = levelInfo.duration;
+      } else {
+        programValue.textContent = baseProgram || '—';
+        durationValue.textContent = (levelInfo && levelInfo.duration) || '—';
+        showNotice(
+          levelInfo
+            ? 'This certificate was found, but the programme name is missing from the registry, so the displayed programme may be incomplete. Please contact info@msdigitalskillhub.com if this is unexpected.'
+            : 'This certificate was found, but its training level could not be determined, so the programme and duration may be incomplete. Please contact info@msdigitalskillhub.com if this is unexpected.'
+        );
+      }
 
       verifyDetails.hidden = false;
       verifyFootnote.hidden = true;
