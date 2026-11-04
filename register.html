@@ -198,13 +198,20 @@
             </div>
           </div>
 
-          <div class="register-field">
-            <label class="register-label" for="track">Training Track</label>
-            <select class="register-input" id="track" name="track" required>
-              <option value="" disabled selected>Please select your training track</option>
-              <option value="Virtual Assistant">Virtual Assistance</option>
-              <option value="Product Management">Product Management</option>
-            </select>
+          <div class="register-grid">
+            <div class="register-field">
+              <label class="register-label" for="whatsapp">WhatsApp Number</label>
+              <input class="register-input" type="tel" id="whatsapp" name="whatsapp" placeholder="+2348012345678" required>
+            </div>
+
+            <div class="register-field">
+              <label class="register-label" for="track">Training Track</label>
+              <select class="register-input" id="track" name="track" required>
+                <option value="" disabled selected>Please select your training track</option>
+                <option value="Virtual Assistant">Virtual Assistance</option>
+                <option value="Product Management">Product Management</option>
+              </select>
+            </div>
           </div>
 
           <div class="register-upload">
@@ -315,7 +322,6 @@
     fileInput.addEventListener('change', async (e) => {
       const rawFiles = Array.from(e.target.files);
       
-      // Show processing feedback on button while compressing
       btnSubmit.disabled = true;
       btnSubmit.innerHTML = 'Optimizing screenshots&hellip;';
 
@@ -400,11 +406,12 @@
     async function submitRegistration() {
       const fullName = document.getElementById('fullName').value.trim();
       const email = document.getElementById('email').value.trim();
+      const whatsapp = document.getElementById('whatsapp').value.trim();
       const track = document.getElementById('track').value.trim();
 
       // Check 1: Text Fields Validation
-      if (!fullName || !email || !track) {
-        showResponse('error', 'Missing Information.', 'Please fill out your Full Name, Email Address, and Training Track.');
+      if (!fullName || !email || !whatsapp || !track) {
+        showResponse('error', 'Missing Information.', 'Please fill out all required fields including your WhatsApp number.');
         return false;
       }
 
@@ -415,8 +422,9 @@
       }
 
       const formData = new FormData();
-      formData.append('name', fullName);
+      formData.append('fullName', fullName);
       formData.append('email', email);
+      formData.append('whatsapp', whatsapp);
       formData.append('track', track);
 
       for (let i = 0; i < 5; i++) {
@@ -437,7 +445,6 @@
         const data = await res.json().catch(() => ({}));
 
         if (res.ok && data.success) {
-          // Display confirmation message WITHOUT resetting the form or clearing previews!
           responseBox.className = 'register-response register-response-success';
           responseBox.innerHTML = '';
 
@@ -447,7 +454,16 @@
           msgDiv.style.fontSize = '14px';
           msgDiv.style.lineHeight = '1.6';
           msgDiv.style.padding = '10px';
-          msgDiv.textContent = data.confirmation_message;
+          msgDiv.textContent = data.message || "Registration approved. Keep your training code safe.";
+
+          if (data.code) {
+            const codeEl = document.createElement('div');
+            codeEl.style.marginTop = '10px';
+            codeEl.style.fontWeight = 'bold';
+            codeEl.style.fontSize = '16px';
+            codeEl.textContent = `Your Unique Training Code: ${data.code}`;
+            msgDiv.appendChild(codeEl);
+          }
 
           responseBox.appendChild(msgDiv);
           responseBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
