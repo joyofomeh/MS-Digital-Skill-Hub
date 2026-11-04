@@ -198,20 +198,13 @@
             </div>
           </div>
 
-          <div class="register-grid">
-            <div class="register-field">
-              <label class="register-label" for="whatsapp">WhatsApp Number</label>
-              <input class="register-input" type="tel" id="whatsapp" name="whatsapp" placeholder="+2348012345678" required>
-            </div>
-
-            <div class="register-field">
-              <label class="register-label" for="track">Training Track</label>
-              <select class="register-input" id="track" name="track" required>
-                <option value="" disabled selected>Please select your training track</option>
-                <option value="Virtual Assistant">Virtual Assistance</option>
-                <option value="Product Management">Product Management</option>
-              </select>
-            </div>
+          <div class="register-field">
+            <label class="register-label" for="track">Training Track</label>
+            <select class="register-input" id="track" name="track" required>
+              <option value="" disabled selected>Please select your training track</option>
+              <option value="Virtual Assistant">Virtual Assistance</option>
+              <option value="Product Management">Product Management</option>
+            </select>
           </div>
 
           <div class="register-upload">
@@ -406,12 +399,11 @@
     async function submitRegistration() {
       const fullName = document.getElementById('fullName').value.trim();
       const email = document.getElementById('email').value.trim();
-      const whatsapp = document.getElementById('whatsapp').value.trim();
       const track = document.getElementById('track').value.trim();
 
       // Check 1: Text Fields Validation
-      if (!fullName || !email || !whatsapp || !track) {
-        showResponse('error', 'Missing Information.', 'Please fill out all required fields including your WhatsApp number.');
+      if (!fullName || !email || !track) {
+        showResponse('error', 'Missing Information.', 'Please fill out your Full Name, Email Address, and Training Track.');
         return false;
       }
 
@@ -424,7 +416,6 @@
       const formData = new FormData();
       formData.append('fullName', fullName);
       formData.append('email', email);
-      formData.append('whatsapp', whatsapp);
       formData.append('track', track);
 
       for (let i = 0; i < 5; i++) {

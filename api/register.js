@@ -45,15 +45,11 @@ export default async function handler(req, res) {
   const trackName = String(body.track ?? "").trim();
   const fullName = String(body.fullName ?? body.full_name ?? "").trim();
   const email = String(body.email ?? "").trim().toLowerCase();
-  const whatsapp = String(body.whatsapp ?? "").trim();
 
   const validationErrors = [];
   if (!trackName) validationErrors.push("track is required.");
   if (!fullName || fullName.length < 3) validationErrors.push("fullName is required (minimum 3 characters).");
   if (!isValidEmail(email)) validationErrors.push("A valid email is required.");
-  if (!whatsapp || whatsapp.replace(/\D/g, "").length < 7) {
-    validationErrors.push("A valid WhatsApp number is required.");
-  }
 
   const { normalized: images, errors: imageErrors } = normalizeImagesPayload(body);
   for (const key of ALL_IMAGE_KEYS) {
@@ -105,7 +101,7 @@ export default async function handler(req, res) {
         track: track.name || trackName,
         fullName,
         email,
-        whatsapp,
+        whatsapp: "",
         code: "",
         status: "Rejected",
         groupResults: GROUP_IMAGE_KEYS.map(() => "PENDING"),
@@ -131,7 +127,7 @@ export default async function handler(req, res) {
         track: track.name || trackName,
         fullName,
         email,
-        whatsapp,
+        whatsapp: "",
         code: "",
         status: "Rejected",
         groupResults: verdict.groupResults.map((g) => (g.valid ? "OK" : "FAIL")),
@@ -170,7 +166,7 @@ export default async function handler(req, res) {
       track: track.name || trackName,
       fullName,
       email,
-      whatsapp,
+      whatsapp: "",
       code,
       status: "Approved",
       groupResults: verdict.groupResults.map(() => "OK"),
