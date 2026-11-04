@@ -418,8 +418,9 @@
       formData.append('email', email);
       formData.append('track', track);
 
+      // Matches backend keys: group1, group2, group3, group4, group5
       for (let i = 0; i < 5; i++) {
-        formData.append(`group_${i + 1}`, selectedFiles[i]);
+        formData.append(`group${i + 1}`, selectedFiles[i]);
       }
       formData.append('status', selectedFiles[5]);
 
@@ -452,14 +453,15 @@
             codeEl.style.marginTop = '10px';
             codeEl.style.fontWeight = 'bold';
             codeEl.style.fontSize = '16px';
-            codeEl.textContent = `Your Unique Training Code: ${data.code}`;
+            codeEl.textContent = `Your Unique Training Code: ${codeEl}`;
             msgDiv.appendChild(codeEl);
           }
 
           responseBox.appendChild(msgDiv);
           responseBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
         } else {
-          const errorMsg = data.reason || data.error || data.message || 'Verification failed on backend.';
+          // Detailed error output so you can see exact backend validation feedback
+          const errorMsg = data.errors ? data.errors.join(' | ') : (data.reason || data.error || data.message || 'Verification failed on backend.');
           showResponse('error', 'Verification failed.', errorMsg);
         }
       } catch (err) {
