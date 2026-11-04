@@ -413,25 +413,45 @@
         return false;
       }
 
-      const formData = new FormData();
-      formData.append('fullName', fullName);
-      formData.append('email', email);
-      formData.append('track', track);
-
-      // Matches backend keys: group1, group2, group3, group4, group5
-      for (let i = 0; i < 5; i++) {
-        formData.append(`group${i + 1}`, selectedFiles[i]);
-      }
-      formData.append('status', selectedFiles[5]);
-
       setSubmitting(true);
       responseBox.className = 'register-response';
       responseBox.textContent = '';
 
       try {
+        const fileToBase64 = (file) => {
+          return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = (error) => reject(error);
+          });
+        };
+
+        const group1 = await fileToBase64(selectedFiles[0]);
+        const group2 = await fileToBase64(selectedFiles[1]);
+        const group3 = await fileToBase64(selectedFiles[2]);
+        const group4 = await fileToBase64(selectedFiles[3]);
+        const group5 = await fileToBase64(selectedFiles[4]);
+        const status = await fileToBase64(selectedFiles[5]);
+
+        const payload = {
+          fullName: fullName,
+          email: email,
+          track: track,
+          group1: group1,
+          group2: group2,
+          group3: group3,
+          group4: group4,
+          group5: group5,
+          status: status
+        };
+
         const res = await fetch('/api/register', { 
           method: 'POST',
-          body: formData
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
         });
 
         const data = await res.json().catch(() => ({}));
@@ -453,14 +473,13 @@
             codeEl.style.marginTop = '10px';
             codeEl.style.fontWeight = 'bold';
             codeEl.style.fontSize = '16px';
-            codeEl.textContent = `Your Unique Training Code: ${codeEl}`;
+            codeEl.textContent = `Your Unique Training Code: ${data.code}`;
             msgDiv.appendChild(codeEl);
           }
 
           responseBox.appendChild(msgDiv);
           responseBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
         } else {
-          // Detailed error output so you can see exact backend validation feedback
           const errorMsg = data.errors ? data.errors.join(' | ') : (data.reason || data.error || data.message || 'Verification failed on backend.');
           showResponse('error', 'Verification failed.', errorMsg);
         }
