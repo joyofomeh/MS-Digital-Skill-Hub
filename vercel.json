@@ -1,0 +1,10 @@
+{
+  "functions": {
+    "api/register.js": {
+      "maxDuration": 60
+    },
+    "api/verify.js": {
+      "maxDuration": 15
+    }
+  }
+}

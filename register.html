@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registration | MS Digital Skill Hub</title>
+  <meta name="description" content="Register for MS Digital Skill Hub and verify your WhatsApp group and status shares to receive your training code.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+
+  <style>
+    /* Styling for Screenshot Preview Cards */
+    .preview-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 12px;
+      margin-top: 15px;
+    }
+    .preview-card {
+      position: relative;
+      border: 1px solid var(--border-color, #e2e8f0);
+      border-radius: 8px;
+      padding: 6px;
+      background: var(--bg-card, #ffffff);
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .preview-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    .preview-card img {
+      width: 100%;
+      height: 120px;
+      object-fit: contain;
+      background: #f8fafc;
+      border-radius: 6px;
+    }
+    .preview-card .preview-tag {
+      font-size: 11px;
+      font-weight: 600;
+      margin-top: 4px;
+      display: block;
+      color: var(--primary-color, #2563eb);
+    }
+    .preview-card .preview-name {
+      font-size: 10px;
+      color: #64748b;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: block;
+    }
+    .preview-remove {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      background: #ef4444;
+      color: #ffffff;
+      border: none;
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-size: 10px;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 10;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Full-Screen Image Lightbox Modal */
+    .image-modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.85);
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    .image-modal-overlay.active {
+      display: flex;
+    }
+    .image-modal-content {
+      max-width: 90vw;
+      max-height: 90vh;
+      object-fit: contain;
+      border-radius: 8px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+    .image-modal-close {
+      position: absolute;
+      top: 20px;
+      right: 25px;
+      color: #ffffff;
+      font-size: 32px;
+      font-weight: bold;
+      cursor: pointer;
+      user-select: none;
+    }
+  </style>
+
+  <script>
+    (function () {
+      var saved = null;
+      try { saved = localStorage.getItem('theme'); } catch (e) {}
+      var theme = saved === 'light' || saved === 'dark'
+        ? saved
+        : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
+</head>
+
+<body>
+
+  <!-- Navigation -->
+  <nav class="navbar" id="navbar">
+    <div class="container nav-container">
+      <a href="index.html" class="nav-logo">
+        <img src="assets/images/logo.jpg.png" alt="MS Digital Skill Hub" class="logo-image">
+      </a>
+
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html#how-it-works">How It Works</a></li>
+        <li><a href="index.html#paths">Programmes</a></li>
+        <li><a href="index.html#testimonials">Results</a></li>
+        <li><a href="about.html">About Us</a></li>
+        <li><a href="index.html#contact">Contact</a></li>
+        <li><a href="register.html" class="nav-cta" data-open-apply>Register Free</a></li>
+
+        <li>
+          <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark or light theme">
+            <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="5"/>
+              <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+            </svg>
+
+            <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+            </svg>
+          </button>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Page Hero -->
+  <section class="page-hero" id="hero">
+    <div class="hero-bg-shapes">
+      <div class="hero-shape hero-shape-1"></div>
+      <div class="hero-shape hero-shape-2"></div>
+      <div class="hero-shape hero-shape-3"></div>
+    </div>
+
+    <div class="container">
+      <div class="page-hero-content">
+        <span class="section-tag">Registration</span>
+        <h1 class="page-hero-title">Verification</h1>
+        <p class="page-hero-subtitle">Please upload the screenshots of your shares to activate your Unique Training Code.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Registration Form -->
+  <section class="register" id="register">
+    <div class="container">
+      <div class="register-card">
+
+        <p class="register-intro">
+          Upload <strong>5 WhatsApp group screenshots</strong> and <strong>1 WhatsApp Status screenshot</strong> (6 images total).
+          <strong>&ldquo;Once verified, your Unique Training Code (UTC) will be issued&rdquo;</strong>.
+        </p>
+
+        <form id="regForm" novalidate>
+
+          <div class="register-grid">
+            <div class="register-field">
+              <label class="register-label" for="fullName">Full Name</label>
+              <input class="register-input" type="text" id="fullName" name="fullName" placeholder="John Doe" required>
+            </div>
+
+            <div class="register-field">
+              <label class="register-label" for="email">Email Address</label>
+              <input class="register-input" type="email" id="email" name="email" placeholder="johndoe@example.com" required>
+            </div>
+          </div>
+
+          <div class="register-field">
+            <label class="register-label" for="track">Training Track</label>
+            <select class="register-input" id="track" name="track" required>
+              <option value="" disabled selected>Please select your training track</option>
+              <option value="Virtual Assistant">Virtual Assistance</option>
+              <option value="Product Management">Product Management</option>
+            </select>
+          </div>
+
+          <div class="register-upload">
+            <span class="register-upload-title">Upload Proof Screenshots (6 Files Required)</span>
+            <p class="register-upload-hint">Upload 5 WhatsApp Group screenshots first, followed by 1 WhatsApp Status screenshot. Click any thumbnail to expand.</p>
+
+            <div class="register-file-row">
+              <input type="file" id="all_screenshots" accept="image/*" multiple aria-label="Upload screenshots">
+            </div>
+
+            <div class="preview-grid" id="previewGrid"></div>
+          </div>
+
+          <div class="register-actions">
+            <button type="submit" class="btn btn-primary btn-block register-submit" id="btnSubmit">
+              Verify &amp; Submit
+            </button>
+          </div>
+        </form>
+
+        <div id="response-box" class="register-response" role="status" aria-live="polite"></div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Full-Screen Lightbox Modal -->
+  <div class="image-modal-overlay" id="imageModal" onclick="closeImageModal()">
+    <span class="image-modal-close">&times;</span>
+    <img class="image-modal-content" id="fullImage" src="" alt="Full view screenshot">
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer" id="contact">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="index.html" class="nav-logo footer-logo">
+            <img src="assets/images/logo.jpg.png" alt="MS Digital Skill Hub" class="logo-image">
+          </a>
+          <p class="footer-brand-text">
+            Free entry. Real skills. Actual outcomes. Building Africa's next generation of tech professionals.
+          </p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 MS Digital Skill Hub. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    let selectedFiles = [];
+
+    const fileInput = document.getElementById('all_screenshots');
+    const previewGrid = document.getElementById('previewGrid');
+    const regForm = document.getElementById('regForm');
+    const btnSubmit = document.getElementById('btnSubmit');
+    const responseBox = document.getElementById('response-box');
+    const imageModal = document.getElementById('imageModal');
+    const fullImage = document.getElementById('fullImage');
+    const DEFAULT_BUTTON_LABEL = btnSubmit ? btnSubmit.innerHTML.trim() : 'Verify & Submit';
+
+    fileInput.addEventListener('change', (e) => {
+      const files = Array.from(e.target.files);
+      selectedFiles = selectedFiles.concat(files);
+      updatePreview();
+      fileInput.value = '';
+    });
+
+    function updatePreview() {
+      previewGrid.innerHTML = '';
+
+      selectedFiles.forEach((file, index) => {
+        const card = document.createElement('div');
+        card.className = 'preview-card';
+
+        const tagLabel = index < 5 ? `Group ${index + 1}` : (index === 5 ? 'Status Share' : `Extra ${index + 1}`);
+        const objectUrl = URL.createObjectURL(file);
+
+        card.innerHTML = `
+          <button type="button" class="preview-remove" onclick="removeFile(event, ${index})">Delete</button>
+          <img src="${objectUrl}" alt="Preview ${index + 1}">
+          <span class="preview-tag">${tagLabel}</span>
+          <span class="preview-name">${file.name}</span>
+        `;
+
+        card.addEventListener('click', () => openImageModal(objectUrl));
+        previewGrid.appendChild(card);
+      });
+    }
+
+    function removeFile(e, index) {
+      e.stopPropagation();
+      selectedFiles.splice(index, 1);
+      updatePreview();
+    }
+
+    function openImageModal(url) {
+      fullImage.src = url;
+      imageModal.classList.add('active');
+    }
+
+    function closeImageModal() {
+      imageModal.classList.remove('active');
+      fullImage.src = '';
+    }
+
+    function showResponse(type, headline, detail, code) {
+      responseBox.className = 'register-response register-response-' + type;
+      responseBox.textContent = '';
+
+      const strong = document.createElement('strong');
+      strong.textContent = headline;
+      responseBox.appendChild(strong);
+      responseBox.appendChild(document.createElement('br'));
+
+      if (detail) {
+        responseBox.appendChild(document.createTextNode(detail));
+      }
+
+      if (code) {
+        const codeEl = document.createElement('span');
+        codeEl.className = 'register-response-code';
+        codeEl.textContent = code;
+        responseBox.appendChild(codeEl);
+      }
+
+      responseBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function setSubmitting(isSubmitting) {
+      btnSubmit.disabled = isSubmitting;
+      btnSubmit.innerHTML = isSubmitting ? 'Verifying screenshots&hellip;' : DEFAULT_BUTTON_LABEL;
+    }
+
+    async function submitRegistration() {
+      const fullName = document.getElementById('fullName').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const track = document.getElementById('track').value.trim();
+
+      // Check 1: Text Fields Validation
+      if (!fullName || !email || !track) {
+        showResponse('error', 'Missing Information.', 'Please fill out your Full Name, Email Address, and Training Track.');
+        return false;
+      }
+
+      // Check 2: Screenshot Files Validation
+      if (selectedFiles.length < 6) {
+        showResponse('error', 'Missing Screenshots.', 'Please upload all screenshots: at least 5 WhatsApp groups and your WhatsApp status.');
+        return false;
+      }
+
+      const formData = new FormData();
+      formData.append('name', fullName);
+      formData.append('email', email);
+      formData.append('track', track);
+
+      for (let i = 0; i < 5; i++) {
+        formData.append(`group_${i + 1}`, selectedFiles[i]);
+      }
+      formData.append('status', selectedFiles[5]);
+
+      setSubmitting(true);
+      responseBox.className = 'register-response';
+      responseBox.textContent = '';
+
+      try {
+        const res = await fetch('http://127.0.0.1:5000/api/register', { 
+          method: 'POST',
+          body: formData
+        });
+
+        const data = await res.json().catch(() => ({}));
+
+        if (res.ok && data.success) {
+          // Display confirmation message WITHOUT resetting the form or clearing previews!
+          responseBox.className = 'register-response register-response-success';
+          responseBox.innerHTML = '';
+
+          const msgDiv = document.createElement('div');
+          msgDiv.style.whiteSpace = 'pre-line';
+          msgDiv.style.textAlign = 'left';
+          msgDiv.style.fontSize = '14px';
+          msgDiv.style.lineHeight = '1.6';
+          msgDiv.style.padding = '10px';
+          msgDiv.textContent = data.confirmation_message;
+
+          responseBox.appendChild(msgDiv);
+          responseBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+          // NOTE: regForm.reset() and selectedFiles clearing have been intentionally removed 
+          // so the user's uploaded screenshots and form fields remain visible!
+        } else {
+          const errorMsg = data.reason || data.error || data.message || 'Verification failed on backend.';
+          showResponse('error', 'Verification failed.', errorMsg);
+        }
+      } catch (err) {
+        showResponse('error', 'Connection Error.', 'Unable to reach backend server at http://127.0.0.1:5000. Ensure app.py is running.');
+      } finally {
+        setSubmitting(false);
+      }
+    }
+
+    if (regForm) {
+      regForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        submitRegistration();
+      });
+    }
+  </script>
+
+</body>
+</html>
