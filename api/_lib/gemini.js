@@ -81,17 +81,23 @@ export async function verifyScreenshots({ images, shareMessage }) {
 
   const parts = [{ text: buildPrompt(shareMessage) }];
 
-  for (const key of [...GROUP_IMAGE_KEYS, STATUS_IMAGE_KEY]) {
-    const image = images[key];
-    parts.push({
-      text: `--- IMAGE LABEL: ${key.toUpperCase()} ---`
-    });
-    parts.push({
-      inlineData: {
-        mimeType: image.mimeType,
-        data: image.data
-      }
-    });
+  // Safely fallback if images object is missing or malformed
+  const safeImages = images && typeof images === "object" ? images : {};
+  const allKeys = [...(GROUP_IMAGE_KEYS || []), STATUS_IMAGE_KEY].filter(Boolean);
+
+  for (const key of allKeys) {
+    const image = safeImages[key];
+    if (image && image.data && image.mimeType) {
+      parts.push({
+        text: `--- IMAGE LABEL: ${String(key).toUpperCase()} ---`
+      });
+      parts.push({
+        inlineData: {
+          mimeType: image.mimeType,
+          data: image.data
+        }
+      });
+    }
   }
 
   const result = await model.generateContent({ parts });
