@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "@google/generative-ai": "^0.21.0",
+    "google-auth-library": "^9.0.0",
     "google-spreadsheet": "^4.1.4"
   }
 }
