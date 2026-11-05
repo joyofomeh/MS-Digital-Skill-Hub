@@ -98,7 +98,6 @@ export async function verifyScreenshots({ images, shareMessage }) {
     }
   }
 
-  // FIX: Pass the parts array directly to model.generateContent
   const result = await model.generateContent(parts);
   const raw = result.response.text();
 
