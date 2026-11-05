@@ -58,13 +58,11 @@ export async function findTrack(trackName) {
   const doc = await authorize();
   const sheet = getSheet(doc, "Tracks");
   
-  // CRITICAL FIX for v4: Explicitly load header row so property mapping works
   await sheet.loadHeaderRow();
   const rows = await sheet.getRows();
   const wanted = String(trackName || "").trim().toLowerCase();
 
   const row = rows.find((r) => {
-    // Use .get() method if available in v4, falling back to standard bracket notation
     const name = String(r.get?.("Track name") ?? r["Track name"] ?? r["Track"] ?? "").trim().toLowerCase();
     const id = String(r.get?.("Track ID") ?? r["Track ID"] ?? "").trim().toLowerCase();
     return (wanted && name === wanted) || (wanted && id === wanted);
@@ -167,6 +165,37 @@ export async function existingCodes() {
     if (code) codes.add(code);
   }
   return codes;
+}
+
+// Sequential Code Generator: Inspects sheet, finds highest number for the prefix, and increments by 1
+export async function getNextSequentialCode(codePrefix) {
+  const doc = await authorize();
+  const sheet = getSheet(doc, "Main");
+  await sheet.loadHeaderRow();
+  const rows = await sheet.getRows();
+  
+  let maxNum = 0;
+  const baseStarts = {
+    "MS/VA/26": 12000,
+    "MS/PM/26": 11000
+  };
+  
+  const prefix = String(codePrefix || "").trim();
+  let nextVal = baseStarts[prefix] || 10000;
+
+  for (const row of rows) {
+    const code = String(row.get?.("Code") ?? row["Code"] ?? "").trim();
+    if (code && code.startsWith(prefix)) {
+      const parts = code.split("/");
+      const lastPart = parseInt(parts[parts.length - 1], 10);
+      if (!isNaN(lastPart) && lastPart >= maxNum) {
+        maxNum = lastPart;
+        nextVal = maxNum + 1;
+      }
+    }
+  }
+
+  return `${prefix}/${nextVal}`;
 }
 
 export async function appendMainRecord(record) {

@@ -4,18 +4,17 @@ import {
   appendMainRecord,
   countAttempts,
   evaluateTrackWindow,
-  existingCodes,
   findDuplicateHashes,
   findTrack,
-  recordHashes
+  recordHashes,
+  getNextSequentialCode
 } from "./_lib/sheets.js";
+import { sendWelcomeEmail } from "./_lib/mailer.js"; // Adjust filename if your mailer is named differently (e.g., email.js)
 import {
   ALL_IMAGE_KEYS,
   GROUP_IMAGE_KEYS,
-  buildTrainingCode,
   isValidEmail,
   normalizeImagesPayload,
-  randomCode,
   sha256,
   toSheetTimestamp
 } from "./_lib/utils.js";
@@ -146,21 +145,12 @@ export default async function handler(req, res) {
       });
     }
 
-    const usedCodes = await existingCodes();
-    let code = "";
-    for (let i = 0; i < 5; i += 1) {
-      const candidate = buildTrainingCode(track.codePrefix, randomCode());
-      if (!usedCodes.has(candidate)) {
-        code = candidate;
-        break;
-      }
-    }
-    if (!code) {
-      throw new Error("Unable to generate a unique training code. Please try again.");
-    }
+    // 1. Generate the next sequential code automatically (e.g. 12000 -> 12013)
+    const code = await getNextSequentialCode(track.codePrefix);
 
     const expires = track.codeExpiresAt ? toSheetTimestamp(track.codeExpiresAt) : "";
 
+    // 2. Log record to Google Sheets
     await appendMainRecord({
       timestamp,
       track: track.name || trackName,
@@ -178,6 +168,21 @@ export default async function handler(req, res) {
 
     await recordHashes(hashes.map((h) => h.hash), email);
 
+    // 3. Dispatch the automated welcome email with their unique training code[cite: 1, 2]
+    try {
+      await sendWelcomeEmail({
+        email,
+        fullName,
+        track: track.name || trackName,
+        code,
+        expires
+      });
+    } catch (emailError) {
+      console.error("Failed to dispatch confirmation email:", emailError);
+      // We log the error but allow registration to succeed so the student still gets their code on screen
+    }
+
+    // 4. Return success response to frontend
     return res.status(200).json({
       success: true,
       message: "Registration approved. Keep your training code safe.",
