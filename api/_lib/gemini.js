@@ -100,17 +100,19 @@ export async function verifyScreenshots({ images, shareMessage }) {
 
   let raw;
   try {
+    // 1. Try normal AI verification first
     const result = await model.generateContent(parts);
     raw = result.response.text();
   } catch (apiError) {
-    // FAIL-SAFE: If Gemini is overloaded (503) or down, approve gracefully so users are never blocked
-    console.warn("Gemini API encounterd high demand / error, bypassing gracefully:", apiError);
-    const fallbackResults = Array(5).fill({ valid: true, reason: "Verified via system fallback." });
+    // 2. FALLBACK SAFETY NET: If AI times out, hits limits, or errors out, 
+    // release their code gracefully instead of crashing their registration or email.
+    console.warn("AI verification delayed or rate-limited. Falling back to ensure student receives code:", apiError);
+    const fallbackResults = Array(5).fill({ valid: true, reason: "Verified via fallback." });
     return {
       approved: true,
       groupResults: fallbackResults,
-      statusResult: { valid: true, reason: "Verified via system fallback." },
-      notes: "All screenshots verified successfully."
+      statusResult: { valid: true, reason: "Verified via fallback." },
+      notes: "Registration approved via fallback."
     };
   }
 
@@ -118,13 +120,13 @@ export async function verifyScreenshots({ images, shareMessage }) {
   try {
     verdict = JSON.parse(raw);
   } catch {
-    // Fallback if JSON parsing fails on a malformed model response
+    // Fallback if JSON parsing fails
     const fallbackResults = Array(5).fill({ valid: true, reason: "Verified via response fallback." });
     return {
       approved: true,
       groupResults: fallbackResults,
       statusResult: { valid: true, reason: "Verified via response fallback." },
-      notes: "All screenshots verified successfully."
+      notes: "Registration approved via fallback."
     };
   }
 
@@ -137,16 +139,21 @@ export async function verifyScreenshots({ images, shareMessage }) {
     ? verdict.statusResult
     : { valid: true, reason: "Verified." };
 
+  const approved =
+    verdict.approved === true &&
+    groupResults.every((g) => g && g.valid === true) &&
+    statusResult.valid === true;
+
   return {
-    approved: true, // Force true to ensure registration always succeeds smoothly
+    approved,
     groupResults: groupResults.map((g) => ({
-      valid: true,
-      reason: String(g?.reason || "Verified.").trim()
+      valid: Boolean(g?.valid),
+      reason: String(g?.reason || "").trim()
     })),
     statusResult: {
-      valid: true,
-      reason: String(statusResult.reason || "Verified.").trim()
+      valid: Boolean(statusResult.valid),
+      reason: String(statusResult.reason || "").trim()
     },
-    notes: String(verdict.notes || "All screenshots verified.").trim()
+    notes: String(verdict.notes || (approved ? "All screenshots verified." : "Verification failed.")).trim()
   };
 }
