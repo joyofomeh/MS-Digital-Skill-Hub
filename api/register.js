@@ -10,6 +10,7 @@ import {
   getNextSequentialCode
 } from "./_lib/sheets.js";
 import { sendWelcomeEmail } from "./_lib/mailer.js";
+import { createSuccessToken } from "./_lib/tokens.js";
 import {
   ALL_IMAGE_KEYS,
   GROUP_IMAGE_KEYS,
@@ -184,29 +185,14 @@ export default async function handler(req, res) {
       console.error("Welcome email failed for", email, "-", mailError);
     }
 
-    // 4. Return success response to frontend
-    const successMessage = [
-      "REGISTRATION APPROVED!",
-      "",
-      "Congratulations! Your registration with MS Digital Skill Hub has been successfully verified.",
-      "Your Unique Training Code (UTC) is:",
-      code,
-      "Please keep this code safe. It will be required throughout your training for attendance, weekly assessments, task submissions, progress tracking, and certificate processing.",
-      "We've also sent your full registration confirmation and training details to your email address.",
-      "",
-      "We can't wait to have you! ❤️",
-      "",
-      "MS Digital Skill Hub",
-      "Learn & Become."
-    ].join("\n");
+    // 4. Send the student to their personal, token-protected success page.
+    const successToken = createSuccessToken({ code, email });
+    const redirectUrl = `/success.html?token=${encodeURIComponent(successToken)}`;
 
     return res.status(200).json({
       success: true,
-      message: successMessage,
-      code,
-      track: track.name || trackName,
-      fullName,
-      email,
+      message: "Registration approved.",
+      redirectUrl,
       attempt,
       emailSent,
       expires: expires || null

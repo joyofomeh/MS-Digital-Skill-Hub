@@ -494,28 +494,17 @@
         }
 
         if (res.ok && data.success) {
-          responseBox.className = 'register-response register-response-success';
-          responseBox.innerHTML = '';
-
-          const msgDiv = document.createElement('div');
-          msgDiv.style.whiteSpace = 'pre-line';
-          msgDiv.style.textAlign = 'left';
-          msgDiv.style.fontSize = '14px';
-          msgDiv.style.lineHeight = '1.6';
-          msgDiv.style.padding = '10px';
-          msgDiv.textContent = data.message || "Registration approved. Keep your training code safe.";
-
-          if (data.code && !String(data.message || '').includes(data.code)) {
-            const codeEl = document.createElement('div');
-            codeEl.style.marginTop = '10px';
-            codeEl.style.fontWeight = 'bold';
-            codeEl.style.fontSize = '16px';
-            codeEl.textContent = `Your Unique Training Code: ${data.code}`;
-            msgDiv.appendChild(codeEl);
+          if (data.redirectUrl) {
+            btnSubmit.innerHTML = 'Redirecting&hellip;';
+            window.location.assign(data.redirectUrl);
+            return;
           }
 
-          responseBox.appendChild(msgDiv);
-          responseBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          showResponse(
+            'error',
+            'Approved, but your success page could not be opened.',
+            'Please check your email for your training code or contact support.'
+          );
         } else {
           const rawSnippet = rawBody ? rawBody.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 300) : '';
           const errorMsg = data.errors

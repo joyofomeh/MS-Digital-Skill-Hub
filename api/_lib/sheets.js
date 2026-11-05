@@ -167,6 +167,36 @@ export async function existingCodes() {
   return codes;
 }
 
+export async function findApprovedRegistration(code, email) {
+  const doc = await authorize();
+  const sheet = getSheet(doc, "Main");
+  await sheet.loadHeaderRow();
+  const rows = await sheet.getRows();
+
+  const wantedCode = String(code || "").trim();
+  const wantedEmail = String(email || "").trim().toLowerCase();
+  if (!wantedCode) return null;
+
+  const row = rows.find((r) => {
+    const rowCode = String(r.get?.("Code") ?? r["Code"] ?? "").trim();
+    const rowEmail = String(r.get?.("Email") ?? r["Email"] ?? "").trim().toLowerCase();
+    const rowStatus = String(r.get?.("Status") ?? r["Status"] ?? "").trim().toLowerCase();
+    return (
+      rowCode === wantedCode &&
+      rowStatus === "approved" &&
+      (!wantedEmail || rowEmail === wantedEmail)
+    );
+  });
+
+  if (!row) return null;
+
+  return {
+    code: String(row.get?.("Code") ?? row["Code"] ?? "").trim(),
+    fullName: String(row.get?.("Full Name") ?? row["Full Name"] ?? "").trim(),
+    track: String(row.get?.("Track") ?? row["Track"] ?? "").trim()
+  };
+}
+
 // Sequential Code Generator: finds the highest number already used for a prefix
 // and increments it by 1. VA starts at 12000, PM starts at 11000.
 const CODE_BASE_STARTS = {

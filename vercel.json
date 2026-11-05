@@ -5,6 +5,9 @@
     },
     "api/verify.js": {
       "maxDuration": 15
+    },
+    "api/registration-status.js": {
+      "maxDuration": 15
     }
   }
 }
