@@ -185,9 +185,24 @@ export default async function handler(req, res) {
     }
 
     // 4. Return success response to frontend
+    const successMessage = [
+      "REGISTRATION APPROVED!",
+      "",
+      "Congratulations! Your registration with MS Digital Skill Hub has been successfully verified.",
+      "Your Unique Training Code (UTC) is:",
+      code,
+      "Please keep this code safe. It will be required throughout your training for attendance, weekly assessments, task submissions, progress tracking, and certificate processing.",
+      "We've also sent your full registration confirmation and training details to your email address.",
+      "",
+      "We can't wait to have you! ❤️",
+      "",
+      "MS Digital Skill Hub",
+      "Learn & Become."
+    ].join("\n");
+
     return res.status(200).json({
       success: true,
-      message: "Registration approved. Keep your training code safe.",
+      message: successMessage,
       code,
       track: track.name || trackName,
       fullName,

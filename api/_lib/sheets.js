@@ -167,31 +167,39 @@ export async function existingCodes() {
   return codes;
 }
 
-// Sequential Code Generator: Inspects sheet, finds highest number for the prefix, and increments by 1
+// Sequential Code Generator: finds the highest number already used for a prefix
+// and increments it by 1. VA starts at 12000, PM starts at 11000.
+const CODE_BASE_STARTS = {
+  VA: 12000,
+  PM: 11000
+};
+const DEFAULT_CODE_BASE = 10000;
+
+function getCodeBase(prefix) {
+  const parts = String(prefix || "").toUpperCase().split("/").filter(Boolean);
+  for (const part of parts) {
+    if (CODE_BASE_STARTS[part]) return CODE_BASE_STARTS[part];
+  }
+  return DEFAULT_CODE_BASE;
+}
+
 export async function getNextSequentialCode(codePrefix) {
   const doc = await authorize();
   const sheet = getSheet(doc, "Main");
   await sheet.loadHeaderRow();
   const rows = await sheet.getRows();
-  
-  let maxNum = 0;
-  const baseStarts = {
-    "MS/VA/26": 12000,
-    "MS/PM/26": 11000
-  };
-  
-  const prefix = String(codePrefix || "").trim();
-  let nextVal = baseStarts[prefix] || 10000;
+
+  const prefix = String(codePrefix || "").trim().replace(/\/+$/, "");
+  let nextVal = getCodeBase(prefix);
 
   for (const row of rows) {
     const code = String(row.get?.("Code") ?? row["Code"] ?? "").trim();
-    if (code && code.startsWith(prefix)) {
-      const parts = code.split("/");
-      const lastPart = parseInt(parts[parts.length - 1], 10);
-      if (!isNaN(lastPart) && lastPart >= maxNum) {
-        maxNum = lastPart;
-        nextVal = maxNum + 1;
-      }
+    if (!code.startsWith(`${prefix}/`)) continue;
+
+    const parts = code.split("/");
+    const lastPart = parseInt(parts[parts.length - 1], 10);
+    if (!isNaN(lastPart)) {
+      nextVal = Math.max(nextVal, lastPart + 1);
     }
   }
 

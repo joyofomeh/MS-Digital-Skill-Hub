@@ -505,7 +505,7 @@
           msgDiv.style.padding = '10px';
           msgDiv.textContent = data.message || "Registration approved. Keep your training code safe.";
 
-          if (data.code) {
+          if (data.code && !String(data.message || '').includes(data.code)) {
             const codeEl = document.createElement('div');
             codeEl.style.marginTop = '10px';
             codeEl.style.fontWeight = 'bold';
