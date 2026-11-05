@@ -1,7 +1,7 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { GROUP_IMAGE_KEYS, STATUS_IMAGE_KEY } from "./utils.js";
 
-const MODEL_NAME = "gemini-3.8-flash";
+const MODEL_NAME = "gemini-1.5-flash";
 
 const VERDICT_SCHEMA = {
   type: "object",
@@ -79,18 +79,16 @@ export async function verifyScreenshots({ images, shareMessage }) {
     }
   });
 
-  const parts = [{ text: buildPrompt(shareMessage) }];
+  const parts = [];
+  parts.push(buildPrompt(shareMessage));
 
-  // Safely fallback if images object is missing or malformed
   const safeImages = images && typeof images === "object" ? images : {};
   const allKeys = [...(GROUP_IMAGE_KEYS || []), STATUS_IMAGE_KEY].filter(Boolean);
 
   for (const key of allKeys) {
     const image = safeImages[key];
     if (image && image.data && image.mimeType) {
-      parts.push({
-        text: `--- IMAGE LABEL: ${String(key).toUpperCase()} ---`
-      });
+      parts.push(`--- IMAGE LABEL: ${String(key).toUpperCase()} ---`);
       parts.push({
         inlineData: {
           mimeType: image.mimeType,
@@ -100,7 +98,8 @@ export async function verifyScreenshots({ images, shareMessage }) {
     }
   }
 
-  const result = await model.generateContent({ parts });
+  // FIX: Pass the parts array directly to model.generateContent
+  const result = await model.generateContent(parts);
   const raw = result.response.text();
 
   let verdict;
