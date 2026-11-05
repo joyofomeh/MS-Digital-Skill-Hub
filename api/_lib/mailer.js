@@ -2,7 +2,7 @@ import nodemailer from "nodemailer";
 
 export async function sendWelcomeEmail({ email, fullName, track, code, expires }) {
   const transporter = nodemailer.createTransport({
-    host: process.env.MAIL_HOST || "mail.msdigitalskillhub.com.ng",
+    host: process.env.MAIL_HOST || "smtp.zoho.com",
     port: Number(process.env.MAIL_PORT) || 465,
     secure: true,
     auth: {

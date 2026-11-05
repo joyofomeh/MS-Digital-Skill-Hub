@@ -168,14 +168,21 @@ export default async function handler(req, res) {
 
     await recordHashes(hashes.map((h) => h.hash), email);
 
-    // 3. Dispatch the automated welcome email (Throws directly if failed so we can see the exact error)
-    await sendWelcomeEmail({
-      email,
-      fullName,
-      track: track.name || trackName,
-      code,
-      expires
-    });
+    // 3. Dispatch the automated welcome email. A mail failure must not invalidate
+    // an already-approved registration (the record and hashes are saved).
+    let emailSent = true;
+    try {
+      await sendWelcomeEmail({
+        email,
+        fullName,
+        track: track.name || trackName,
+        code,
+        expires
+      });
+    } catch (mailError) {
+      emailSent = false;
+      console.error("Welcome email failed for", email, "-", mailError);
+    }
 
     // 4. Return success response to frontend
     return res.status(200).json({
@@ -186,6 +193,7 @@ export default async function handler(req, res) {
       fullName,
       email,
       attempt,
+      emailSent,
       expires: expires || null
     });
   } catch (error) {
