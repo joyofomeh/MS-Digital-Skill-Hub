@@ -1,4 +1,5 @@
 import { GoogleSpreadsheet } from "google-spreadsheet";
+import { JWT } from "google-auth-library";
 import { chunk, parseSheetDate } from "./utils.js";
 
 let cachedDoc = null;
@@ -22,8 +23,13 @@ async function authorize() {
 
   if (cachedDoc) return cachedDoc;
 
-  const doc = new GoogleSpreadsheet(spreadsheetId);
-  await doc.useServiceAccountAuth({ client_email: clientEmail, private_key: privateKey });
+  const serviceAccountAuth = new JWT({
+    email: clientEmail,
+    key: privateKey,
+    scopes: ["https://www.googleapis.com/auth/spreadsheets"],
+  });
+
+  const doc = new GoogleSpreadsheet(spreadsheetId, serviceAccountAuth);
   await doc.loadInfo();
   cachedDoc = doc;
   return doc;
