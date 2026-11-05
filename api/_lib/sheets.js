@@ -57,25 +57,29 @@ function normalizeSwitch(value) {
 export async function findTrack(trackName) {
   const doc = await authorize();
   const sheet = getSheet(doc, "Tracks");
+  
+  // CRITICAL FIX for v4: Explicitly load header row so property mapping works
+  await sheet.loadHeaderRow();
   const rows = await sheet.getRows();
   const wanted = String(trackName || "").trim().toLowerCase();
 
   const row = rows.find((r) => {
-    const name = String(r["Track name"] ?? r["Track"] ?? "").trim().toLowerCase();
-    const id = String(r["Track ID"] ?? "").trim().toLowerCase();
+    // Use .get() method if available in v4, falling back to standard bracket notation
+    const name = String(r.get?.("Track name") ?? r["Track name"] ?? r["Track"] ?? "").trim().toLowerCase();
+    const id = String(r.get?.("Track ID") ?? r["Track ID"] ?? "").trim().toLowerCase();
     return (wanted && name === wanted) || (wanted && id === wanted);
   });
 
   if (!row) return null;
 
   return {
-    name: String(row["Track name"] ?? row["Track"] ?? "").trim(),
-    shareMessage: String(row["Share message"] ?? "").trim(),
-    codePrefix: String(row["Code prefix"] ?? "").trim(),
-    manualSwitch: normalizeSwitch(row["Manual switch"]),
-    opensAt: parseSheetDate(row["Open at"]),
-    closesAt: parseSheetDate(row["Close at"], { endOfDay: true }),
-    codeExpiresAt: parseSheetDate(row["Code expires at"], { endOfDay: true })
+    name: String(row.get?.("Track name") ?? row["Track name"] ?? row["Track"] ?? "").trim(),
+    shareMessage: String(row.get?.("Share message") ?? row["Share message"] ?? "").trim(),
+    codePrefix: String(row.get?.("Code prefix") ?? row["Code prefix"] ?? "").trim(),
+    manualSwitch: normalizeSwitch(row.get?.("Manual switch") ?? row["Manual switch"]),
+    opensAt: parseSheetDate(row.get?.("Open at") ?? row["Open at"]),
+    closesAt: parseSheetDate(row.get?.("Close at") ?? row["Close at"], { endOfDay: true }),
+    codeExpiresAt: parseSheetDate(row.get?.("Code expires at") ?? row["Code expires at"], { endOfDay: true })
   };
 }
 
@@ -105,17 +109,18 @@ export function evaluateTrackWindow(track, now = new Date()) {
 export async function findDuplicateHashes(hashes) {
   const doc = await authorize();
   const sheet = getSheet(doc, "Hashes");
+  await sheet.loadHeaderRow();
   const rows = await sheet.getRows();
   const wanted = new Set(hashes.map((h) => h.toLowerCase()));
   const duplicates = [];
 
   for (const row of rows) {
-    const hash = String(row["Hash"] ?? "").trim().toLowerCase();
+    const hash = String(row.get?.("Hash") ?? row["Hash"] ?? "").trim().toLowerCase();
     if (wanted.has(hash)) {
       duplicates.push({
         hash,
-        email: String(row["Email"] ?? "").trim(),
-        timestamp: String(row["Timestamp"] ?? "").trim()
+        email: String(row.get?.("Email") ?? row["Email"] ?? "").trim(),
+        timestamp: String(row.get?.("Timestamp") ?? row["Timestamp"] ?? "").trim()
       });
     }
   }
@@ -127,6 +132,7 @@ export async function recordHashes(hashes, email) {
   if (!hashes.length) return;
   const doc = await authorize();
   const sheet = getSheet(doc, "Hashes");
+  await sheet.loadHeaderRow();
   const timestamp = new Date().toISOString();
   const payload = hashes.map((hash) => ({ Hash: hash, Timestamp: timestamp, Email: email }));
 
@@ -138,13 +144,14 @@ export async function recordHashes(hashes, email) {
 export async function countAttempts(email, trackName) {
   const doc = await authorize();
   const sheet = getSheet(doc, "Main");
+  await sheet.loadHeaderRow();
   const rows = await sheet.getRows();
   const wantedEmail = String(email || "").trim().toLowerCase();
   const wantedTrack = String(trackName || "").trim().toLowerCase();
 
   return rows.filter((row) => {
-    const rowEmail = String(row["Email"] ?? "").trim().toLowerCase();
-    const rowTrack = String(row["Track"] ?? "").trim().toLowerCase();
+    const rowEmail = String(row.get?.("Email") ?? row["Email"] ?? "").trim().toLowerCase();
+    const rowTrack = String(row.get?.("Track") ?? row["Track"] ?? "").trim().toLowerCase();
     return rowEmail === wantedEmail && rowTrack === wantedTrack;
   }).length;
 }
@@ -152,10 +159,11 @@ export async function countAttempts(email, trackName) {
 export async function existingCodes() {
   const doc = await authorize();
   const sheet = getSheet(doc, "Main");
+  await sheet.loadHeaderRow();
   const rows = await sheet.getRows();
   const codes = new Set();
   for (const row of rows) {
-    const code = String(row["Code"] ?? "").trim();
+    const code = String(row.get?.("Code") ?? row["Code"] ?? "").trim();
     if (code) codes.add(code);
   }
   return codes;
@@ -164,6 +172,7 @@ export async function existingCodes() {
 export async function appendMainRecord(record) {
   const doc = await authorize();
   const sheet = getSheet(doc, "Main");
+  await sheet.loadHeaderRow();
   await sheet.addRow({
     Timestamp: record.timestamp,
     Track: record.track,
