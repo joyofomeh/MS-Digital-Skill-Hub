@@ -89,31 +89,80 @@ export default async function handler(req, res) {
       hash: sha256(images[key].data)
     }));
 
+    const seenHashes = new Map();
+    const repeatedKeys = new Set();
+
+    for (const { key, hash } of hashes) {
+      const firstKey = seenHashes.get(hash);
+      if (firstKey) {
+        repeatedKeys.add(firstKey);
+        repeatedKeys.add(key);
+      } else {
+        seenHashes.set(hash, key);
+      }
+    }
+
+    if (repeatedKeys.size) {
+      const labels = [...repeatedKeys].map((key) => GROUP_LABELS[key] || "Status").join(", ");
+
+      try {
+        await appendMainRecord({
+          timestamp,
+          track: track.name || trackName,
+          fullName,
+          email,
+          whatsapp: "",
+          code: "",
+          status: "Rejected",
+          groupResults: GROUP_IMAGE_KEYS.map(() => "PENDING"),
+          statusResult: "PENDING",
+          aiNotes: `The same screenshot was uploaded more than once in a single submission (${labels}).`,
+          attempt: (await countAttempts(email, track.name || trackName)) + 1,
+          expires: ""
+        });
+      } catch (logError) {
+        console.error("Unable to log duplicate submission:", logError);
+      }
+
+      return fail(res, 409, {
+        message: "You uploaded the same screenshot more than once. Each screenshot must be unique.",
+        duplicateImages: labels
+      });
+    }
+
     const duplicates = await findDuplicateHashes(hashes.map((h) => h.hash));
     if (duplicates.length) {
-      const duplicateKeys = duplicates
-        .map((d) => hashes.find((h) => h.hash === d.hash)?.key)
-        .filter(Boolean);
+      const duplicateKeys = [
+        ...new Set(
+          duplicates
+            .map((d) => hashes.find((h) => h.hash === d.hash)?.key)
+            .filter(Boolean)
+        )
+      ];
       const labels = duplicateKeys.map((k) => GROUP_LABELS[k] || "Status").join(", ");
 
-      await appendMainRecord({
-        timestamp,
-        track: track.name || trackName,
-        fullName,
-        email,
-        whatsapp: "",
-        code: "",
-        status: "Rejected",
-        groupResults: GROUP_IMAGE_KEYS.map(() => "PENDING"),
-        statusResult: "PENDING",
-        aiNotes: `Duplicate screenshot(s) detected (${labels}). These image hashes already exist in the Hashes tab.`,
-        attempt: (await countAttempts(email, track.name || trackName)) + 1,
-        expires: ""
-      });
+      try {
+        await appendMainRecord({
+          timestamp,
+          track: track.name || trackName,
+          fullName,
+          email,
+          whatsapp: "",
+          code: "",
+          status: "Rejected",
+          groupResults: GROUP_IMAGE_KEYS.map(() => "PENDING"),
+          statusResult: "PENDING",
+          aiNotes: `Duplicate screenshot(s) detected (${labels}). These image hashes already exist in the Hashes tab.`,
+          attempt: (await countAttempts(email, track.name || trackName)) + 1,
+          expires: ""
+        });
+      } catch (logError) {
+        console.error("Unable to log duplicate submission:", logError);
+      }
 
       return fail(res, 409, {
         message:
-          "Some of your screenshots have already been used by another registration. Please retake fresh screenshots.",
+          "Some of your screenshots have already been used by another registration. Please take fresh screenshots.",
         duplicateImages: labels
       });
     }

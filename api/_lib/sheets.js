@@ -43,6 +43,61 @@ function getSheet(doc, title) {
   return sheet;
 }
 
+const MAIN_HEADERS = [
+  "Timestamp",
+  "Track",
+  "Full Name",
+  "Email",
+  "WhatsApp",
+  "Code",
+  "Status",
+  "Group 1",
+  "Group 2",
+  "Group 3",
+  "Group 4",
+  "Group 5",
+  "Status OK",
+  "AI Notes",
+  "Attempt",
+  "Expires"
+];
+
+const TRACK_HEADERS = [
+  "Track name",
+  "Share message",
+  "Code prefix",
+  "Manual switch",
+  "Open at",
+  "Close at",
+  "Code expires at"
+];
+
+const HASH_HEADERS = ["Hash", "Timestamp", "Email"];
+
+async function loadHeaderRowSafe(sheet, requiredHeaders) {
+  try {
+    await sheet.loadHeaderRow();
+  } catch (error) {
+    const duplicate = String(error?.message || "").match(/Duplicate header detected:\s*"([^"]+)"/i);
+    if (!duplicate) throw error;
+
+    console.warn(
+      `Google Sheet tab "${sheet.title}" has duplicate header "${duplicate[1]}". ` +
+      "Continuing with the existing header row; check that row 1 is correct."
+    );
+  }
+
+  const headers = sheet.headerValues || [];
+  const missing = requiredHeaders.filter((header) => !headers.includes(header));
+
+  if (missing.length) {
+    throw new ConfigError(
+      `Google Sheet tab "${sheet.title}" is missing required header(s): ${missing.join(", ")}. ` +
+      `Row 1 must contain: ${requiredHeaders.join(" | ")}.`
+    );
+  }
+}
+
 export async function getSpreadsheet() {
   return authorize();
 }
@@ -58,7 +113,7 @@ export async function findTrack(trackName) {
   const doc = await authorize();
   const sheet = getSheet(doc, "Tracks");
   
-  await sheet.loadHeaderRow();
+  await loadHeaderRowSafe(sheet, TRACK_HEADERS);
   const rows = await sheet.getRows();
   const wanted = String(trackName || "").trim().toLowerCase();
 
@@ -107,7 +162,7 @@ export function evaluateTrackWindow(track, now = new Date()) {
 export async function findDuplicateHashes(hashes) {
   const doc = await authorize();
   const sheet = getSheet(doc, "Hashes");
-  await sheet.loadHeaderRow();
+  await loadHeaderRowSafe(sheet, HASH_HEADERS);
   const rows = await sheet.getRows();
   const wanted = new Set(hashes.map((h) => h.toLowerCase()));
   const duplicates = [];
@@ -130,7 +185,7 @@ export async function recordHashes(hashes, email) {
   if (!hashes.length) return;
   const doc = await authorize();
   const sheet = getSheet(doc, "Hashes");
-  await sheet.loadHeaderRow();
+  await loadHeaderRowSafe(sheet, HASH_HEADERS);
   const timestamp = new Date().toISOString();
   const payload = hashes.map((hash) => ({ Hash: hash, Timestamp: timestamp, Email: email }));
 
@@ -142,7 +197,7 @@ export async function recordHashes(hashes, email) {
 export async function countAttempts(email, trackName) {
   const doc = await authorize();
   const sheet = getSheet(doc, "Main");
-  await sheet.loadHeaderRow();
+  await loadHeaderRowSafe(sheet, MAIN_HEADERS);
   const rows = await sheet.getRows();
   const wantedEmail = String(email || "").trim().toLowerCase();
   const wantedTrack = String(trackName || "").trim().toLowerCase();
@@ -157,7 +212,7 @@ export async function countAttempts(email, trackName) {
 export async function existingCodes() {
   const doc = await authorize();
   const sheet = getSheet(doc, "Main");
-  await sheet.loadHeaderRow();
+  await loadHeaderRowSafe(sheet, MAIN_HEADERS);
   const rows = await sheet.getRows();
   const codes = new Set();
   for (const row of rows) {
@@ -170,7 +225,7 @@ export async function existingCodes() {
 export async function findApprovedRegistration(code, email) {
   const doc = await authorize();
   const sheet = getSheet(doc, "Main");
-  await sheet.loadHeaderRow();
+  await loadHeaderRowSafe(sheet, MAIN_HEADERS);
   const rows = await sheet.getRows();
 
   const wantedCode = String(code || "").trim();
@@ -216,7 +271,7 @@ function getCodeBase(prefix) {
 export async function getNextSequentialCode(codePrefix) {
   const doc = await authorize();
   const sheet = getSheet(doc, "Main");
-  await sheet.loadHeaderRow();
+  await loadHeaderRowSafe(sheet, MAIN_HEADERS);
   const rows = await sheet.getRows();
 
   const prefix = String(codePrefix || "").trim().replace(/\/+$/, "");
@@ -239,7 +294,7 @@ export async function getNextSequentialCode(codePrefix) {
 export async function appendMainRecord(record) {
   const doc = await authorize();
   const sheet = getSheet(doc, "Main");
-  await sheet.loadHeaderRow();
+  await loadHeaderRowSafe(sheet, MAIN_HEADERS);
   await sheet.addRow({
     Timestamp: record.timestamp,
     Track: record.track,
