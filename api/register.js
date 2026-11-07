@@ -15,12 +15,10 @@ import {
 } from "./_lib/sheets.js";
 import {
   ImageValidationError,
-  analyzeImagePayload,
-  isSimilarPHash
+  analyzeImagePayload
 } from "./_lib/images.js";
 import { sendWelcomeEmail } from "./_lib/mailer.js";
 import { createSuccessToken } from "./_lib/tokens.js";
-import { verifyLegacyText } from "./_lib/local-verify.js";
 import { checkRateLimit, clientIpHash } from "./_lib/request-guard.js";
 import {
   ALL_IMAGE_KEYS,
@@ -72,6 +70,7 @@ export default async function handler(req, res) {
     10,
     10 * 60 * 1000
   );
+
   if (!ipLimit.allowed) {
     res.setHeader("Retry-After", String(ipLimit.retryAfter));
     return fail(res, 429, {
@@ -83,19 +82,21 @@ export default async function handler(req, res) {
   const trackName = String(body.track ?? "").trim();
   const fullName = String(body.fullName ?? body.full_name ?? "").trim();
   const email = String(body.email ?? "").trim().toLowerCase();
-  const ocrTexts =
-    body.ocrTexts && typeof body.ocrTexts === "object" && !Array.isArray(body.ocrTexts)
-      ? body.ocrTexts
-      : {};
 
   const validationErrors = [];
+
   if (!trackName) validationErrors.push("track is required.");
+
   if (!fullName || fullName.length < 3) {
     validationErrors.push("fullName is required (minimum 3 characters).");
   }
-  if (!isValidEmail(email)) validationErrors.push("A valid email is required.");
+
+  if (!isValidEmail(email)) {
+    validationErrors.push("A valid email is required.");
+  }
 
   const { normalized: images, errors: imageErrors } = normalizeImagesPayload(body);
+
   for (const key of ALL_IMAGE_KEYS) {
     if (imageErrors[key]) validationErrors.push(imageErrors[key]);
   }
@@ -105,6 +106,7 @@ export default async function handler(req, res) {
       (sum, key) => sum + images[key].data.length,
       0
     );
+
     if (totalBytes > 3_800_000) {
       validationErrors.push(
         "Combined screenshots exceed the 4.5MB serverless request limit. Please compress or resize the images and resubmit."
@@ -124,6 +126,7 @@ export default async function handler(req, res) {
     10,
     60 * 60 * 1000
   );
+
   if (!emailLimit.allowed) {
     res.setHeader("Retry-After", String(emailLimit.retryAfter));
     return fail(res, 429, {
@@ -135,13 +138,10 @@ export default async function handler(req, res) {
 
   try {
     const analyzed = [];
+
     for (const key of ALL_IMAGE_KEYS) {
       const imageInfo = await analyzeImagePayload(images[key].data);
-      if (imageInfo.lowInformation) {
-        return fail(res, 422, {
-          message: `${LABELS[key]} appears blank or too plain. Please upload a clear screenshot of the required WhatsApp screen.`
-        });
-      }
+
       analyzed.push({
         key,
         sha256: sha256(imageInfo.data),
@@ -149,49 +149,43 @@ export default async function handler(req, res) {
       });
     }
 
+    // Reject exact duplicate files within the same registration.
     const repeatedLabels = new Set();
+
     for (let left = 0; left < analyzed.length; left += 1) {
       for (let right = left + 1; right < analyzed.length; right += 1) {
-      const a = analyzed[left];
-      const b = analyzed[right];
-      const exact = a.sha256 === b.sha256;
-    if (exact) {
-      repeatedLabels.add(LABELS[a.key]);
-      repeatedLabels.add(LABELS[b.key]);
-    }
-  }
-}
+        const a = analyzed[left];
+        const b = analyzed[right];
 
-    if (repeatedLabels.size) {
-      const labels = [...repeatedLabels].join(", ");
-      return fail(res, 409, {
-        message:
-          "You uploaded the same or too-similar screenshot more than once. Each of the 6 screenshots must be different.",
-        duplicateImages: labels
-      });
-    }
-
-    for (const item of analyzed) {
-      const verdict = verifyLegacyText(ocrTexts[item.key]);
-      if (!verdict.valid) {
-        return fail(res, 422, {
-          message: `${LABELS[item.key]} could not be verified. ${verdict.reason}`,
-          errors: [`${LABELS[item.key]}: ${verdict.reason}`]
-        });
+        if (a.sha256 === b.sha256) {
+          repeatedLabels.add(LABELS[a.key]);
+          repeatedLabels.add(LABELS[b.key]);
+        }
       }
     }
 
+    if (repeatedLabels.size) {
+      return fail(res, 409, {
+        message:
+          "You uploaded the exact same screenshot more than once. Each of the 6 screenshots must be different.",
+        duplicateImages: [...repeatedLabels].join(", ")
+      });
+    }
+
     const track = await findTrack(trackName);
+
     if (!track) {
       return fail(res, 404, { message: `Track "${trackName}" was not found.` });
     }
 
     const windowState = evaluateTrackWindow(track);
+
     if (!windowState.open) {
       return fail(res, 403, { message: windowState.reason });
     }
 
     const submissionId = `single-${randomUUID()}`;
+
     for (const item of analyzed) {
       const reservation = await reserveHashRow({
         sha256: item.sha256,
@@ -201,12 +195,14 @@ export default async function handler(req, res) {
         slot: item.key,
         ttlMs: RESERVATION_TTL_MS
       });
+
       reservations.push({ ...reservation, item });
     }
 
     await sleep(350);
 
     const hashRows = await getHashRows();
+
     for (const reservation of reservations) {
       const conflicts = findHashConflicts(hashRows, {
         sha256: reservation.item.sha256,
@@ -215,12 +211,16 @@ export default async function handler(req, res) {
         slot: reservation.item.key
       });
 
-      if (conflicts.length && !isEarliestReservation(reservation.info, conflicts)) {
+      if (
+        conflicts.length &&
+        !isEarliestReservation(reservation.info, conflicts)
+      ) {
         await releaseReservations(reservations);
         reservations = [];
+
         return fail(res, 409, {
           message:
-            "Some of your screenshots have already been used by another registration. Please take fresh screenshots.",
+            "Some of your screenshots have already been used by another registration. Please upload different screenshots.",
           duplicateImages: LABELS[reservation.item.key]
         });
       }
@@ -235,6 +235,7 @@ export default async function handler(req, res) {
     if (!lock.acquired) {
       await releaseReservations(reservations);
       reservations = [];
+
       return fail(res, 429, {
         message: "Registration is busy right now. Please try again in a moment."
       });
@@ -246,8 +247,12 @@ export default async function handler(req, res) {
 
     try {
       attempt = (await countAttempts(email, track.name || trackName)) + 1;
+
       code = await getNextSequentialCode(track.codePrefix);
-      expires = track.codeExpiresAt ? toSheetTimestamp(track.codeExpiresAt) : "";
+
+      expires = track.codeExpiresAt
+        ? toSheetTimestamp(track.codeExpiresAt)
+        : "";
 
       await appendMainRecord({
         timestamp: toSheetTimestamp(),
@@ -259,7 +264,7 @@ export default async function handler(req, res) {
         status: "Approved",
         groupResults: GROUP_IMAGE_KEYS.map(() => "OK"),
         statusResult: "OK",
-        aiNotes: "Screenshots verified locally. Duplicate checks passed.",
+        aiNotes: "Registration submitted. Exact duplicate screenshot checks passed.",
         attempt,
         expires
       });
@@ -275,9 +280,11 @@ export default async function handler(req, res) {
         console.error("Unable to save accepted screenshot hash:", error);
       }
     }
+
     reservations = [];
 
     let emailSent = true;
+
     try {
       await sendWelcomeEmail({
         email,
@@ -292,6 +299,7 @@ export default async function handler(req, res) {
     }
 
     const successToken = createSuccessToken({ code, email });
+
     const redirectUrl = `/success.html?token=${encodeURIComponent(successToken)}`;
 
     return res.status(200).json({
@@ -307,6 +315,7 @@ export default async function handler(req, res) {
 
     if (error instanceof ConfigError) {
       console.error("Registration configuration error:", error);
+
       return fail(res, 500, {
         message: "Registration is temporarily unavailable. Please try again shortly."
       });
@@ -317,6 +326,7 @@ export default async function handler(req, res) {
     }
 
     console.error("Registration failed:", error);
+
     return fail(res, 500, {
       message: "Unable to complete registration right now. Please try again shortly."
     });

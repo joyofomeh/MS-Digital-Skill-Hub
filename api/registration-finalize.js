@@ -27,7 +27,6 @@ import { ALL_IMAGE_KEYS, GROUP_IMAGE_KEYS, toSheetTimestamp } from "./_lib/utils
 import { checkRateLimit } from "./_lib/request-guard.js";
 import {
   fail,
-  normalizeGroupName,
   publicDraft,
   serverError
 } from "./_lib/registration.js";
@@ -220,26 +219,12 @@ export default async function handler(req, res) {
         res,
         draftFromRow(record.row),
         slots,
-        "Please upload and verify all six screenshots before finalizing."
+        "Please upload all six screenshots before finalizing."
       );
     }
 
     const hashRows = await getHashRows();
     const invalidSlots = [];
-
-    const seenGroups = new Map();
-    for (const key of GROUP_IMAGE_KEYS) {
-      const slot = slotMap.get(key);
-      const normalized = normalizeGroupName(slot.groupName);
-      if (normalized && seenGroups.has(normalized)) {
-        invalidSlots.push({
-          slot,
-          reason: "duplicate group: this WhatsApp group is used more than once in your registration."
-        });
-        continue;
-      }
-      if (normalized) seenGroups.set(normalized, key);
-    }
 
     for (const key of ALL_IMAGE_KEYS) {
       if (invalidSlots.some((item) => item.slot.slot === key)) continue;
@@ -347,7 +332,7 @@ export default async function handler(req, res) {
         status: "Approved",
         groupResults: GROUP_IMAGE_KEYS.map(() => "OK"),
         statusResult: "OK",
-        aiNotes: "All six screenshots were verified automatically.",
+        aiNotes: "All six required screenshots were uploaded and duplicate checks passed.",
         attempt,
         expires
       });

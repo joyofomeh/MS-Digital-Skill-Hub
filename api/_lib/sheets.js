@@ -1,7 +1,6 @@
 import { GoogleSpreadsheet } from "google-spreadsheet";
 import { JWT } from "google-auth-library";
 import { chunk, parseSheetDate, sleep } from "./utils.js";
-import { isSimilarPHash } from "./images.js";
 
 let cachedDoc = null;
 
@@ -652,22 +651,23 @@ export function findHashConflicts(rows, candidate) {
 
   for (const row of rows) {
     const info = hashRowInfo(row);
-    if (info.draftId === candidate.draftId && info.slot === candidate.slot) continue;
 
-    if (info.status === "pending" && info.expiresAt && timestampMs(info.expiresAt) < now) {
+    if (info.draftId === candidate.draftId && info.slot === candidate.slot) {
+      continue;
+    }
+
+    if (
+      info.status === "pending" &&
+      info.expiresAt &&
+      timestampMs(info.expiresAt) < now
+    ) {
       continue;
     }
 
     const exact = info.hash && info.hash === candidate.sha256;
+
     if (exact) {
       conflicts.push({ ...info, type: "exact" });
-      continue;
-    }
-
-    if (info.status === "rejected") continue;
-
-    if (info.pHash && candidate.pHash && isSimilarPHash(info.pHash, candidate.pHash)) {
-      conflicts.push({ ...info, type: "similar" });
     }
   }
 
