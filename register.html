@@ -202,6 +202,14 @@
       width: 100%;
       font-size: 12px;
     }
+    .slot-file-input:disabled,
+    .slot-group-input:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+    .slot-card[data-status="locked"] {
+      opacity: 0.72;
+    }
     .slot-file-input::file-selector-button {
       margin-right: 8px;
       padding: 8px 10px;
@@ -538,6 +546,7 @@
     const MAX_IMAGE_BYTES = 1800 * 1024;
     const STATUS_LABELS = {
       empty: 'Not uploaded',
+      locked: 'Locked',
       processing: 'Verifying',
       accepted: 'Verified',
       rejected: 'Needs replacement',
@@ -891,7 +900,7 @@
         el.disabled = locked;
       });
       startActions.hidden = locked;
-      workflow.hidden = !locked;
+      workflow.hidden = false;
       finalizeBar.classList.toggle('visible', locked);
     }
 
@@ -905,6 +914,7 @@
       btnFinalize.disabled = true;
       resetTurnstile();
       clearResponse();
+      renderWorkflow();
     }
 
     function slotDisplayStatus(state) {
@@ -914,7 +924,13 @@
     }
 
     function updateProgress() {
-      if (!draft) return;
+      if (!draft) {
+        progressText.textContent = 'Start registration to unlock uploads';
+        progressHint.textContent = 'Complete your details above, then click Start Registration.';
+        btnFinalize.disabled = true;
+        finalizeHint.textContent = 'All six screenshots must be verified before your Unique Training Code can be issued.';
+        return;
+      }
       const accepted = SLOT_DEFS.filter((def) => {
         const state = slotState[def.slot];
         return state && state.status === 'accepted' && !state.dirty;
@@ -1009,14 +1025,14 @@
     }
 
     function renderWorkflow() {
-      if (!draft) return;
+      const locked = !draft;
 
-      setIdentityLocked(true);
+      setIdentityLocked(!locked);
       slotGrid.innerHTML = '';
 
       for (const def of SLOT_DEFS) {
         const state = slotState[def.slot];
-        const displayStatus = slotDisplayStatus(state);
+        const displayStatus = locked ? 'locked' : slotDisplayStatus(state);
 
         const card = document.createElement('div');
         card.className = 'slot-card';
@@ -1043,7 +1059,7 @@
           groupInput.placeholder = 'WhatsApp group name';
           groupInput.value = state.groupName || '';
           groupInput.maxLength = 120;
-          groupInput.disabled = state.processing || (state.status === 'accepted' && !state.dirty);
+          groupInput.disabled = locked || state.processing || (state.status === 'accepted' && !state.dirty);
           groupInput.addEventListener('input', () => {
             state.groupName = groupInput.value;
             if (state.status === 'accepted') {
@@ -1061,7 +1077,7 @@
         fileInput.accept = 'image/*';
         fileInput.className = 'slot-file-input';
         fileInput.dataset.slotFile = def.slot;
-        fileInput.disabled = state.processing;
+        fileInput.disabled = locked || state.processing;
         fileInput.addEventListener('change', () => {
           const file = fileInput.files && fileInput.files[0];
           if (!file) return;
@@ -1101,13 +1117,16 @@
         actions.className = 'slot-actions';
 
         const verifyButton = makeButton(
-          state.processing
-            ? 'Verifying...'
-            : (state.file ? 'Verify Screenshot' : 'Choose Screenshot'),
+          locked
+            ? 'Start Registration First'
+            : (state.processing
+              ? 'Verifying...'
+              : (state.file ? 'Verify Screenshot' : 'Choose Screenshot')),
           'btn btn-primary',
           () => uploadSlot(def)
         );
         verifyButton.disabled =
+          locked ||
           state.processing ||
           (!state.file && state.status === 'accepted' && !state.dirty) ||
           (def.isGroup && !state.groupName.trim() && !state.file);
@@ -1261,12 +1280,11 @@
     btnCopyShareMessage.addEventListener('click', copyShareMessage);
 
     initSlotState();
+    renderWorkflow();
     setupTurnstile();
 
     if (token) {
       refreshStatus(false);
-    } else {
-      setIdentityLocked(false);
     }
   </script>
 
