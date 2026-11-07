@@ -32,7 +32,7 @@
   ],
   "functions": {
     "api/register.js": {
-      "maxDuration": 10
+      "maxDuration": 60
     },
     "api/registration-start.js": {
       "maxDuration": 30

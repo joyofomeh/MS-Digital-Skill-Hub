@@ -33,6 +33,28 @@ function findDuplicateGroup(normalizedText, otherGroupNames) {
     .find((name) => normalizedText.includes(name));
 }
 
+export function verifyLegacyText(text) {
+  const raw = String(text || "").trim();
+
+  if (raw.length < MIN_TEXT_LENGTH) {
+    return {
+      valid: false,
+      reason:
+        "We could not read enough text from this screenshot. Please upload a clearer, uncropped screenshot."
+    };
+  }
+
+  if (!hasBrand(raw)) {
+    return {
+      valid: false,
+      reason:
+        "The MS Digital Skill Hub share message was not found in this screenshot. Please upload the screenshot showing the shared message."
+    };
+  }
+
+  return { valid: true, reason: "Screenshot verified." };
+}
+
 export function verifySlotText({
   slot,
   text,
