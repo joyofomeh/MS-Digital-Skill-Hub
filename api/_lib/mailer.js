@@ -2,6 +2,7 @@ import nodemailer from "nodemailer";
 
 const TRAINING_DATES = {
   "Product Management": "30th November 2026",
+  "Virtual Assistance": "14th December 2026",
   "Virtual Assistant": "14th December 2026"
 };
 const DEFAULT_TRAINING_DATE = "14th December 2026";

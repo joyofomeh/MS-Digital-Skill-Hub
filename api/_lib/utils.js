@@ -131,3 +131,7 @@ export function chunk(items, size) {
   }
   return out;
 }
+
+export function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}

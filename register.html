@@ -104,6 +104,245 @@
       cursor: pointer;
       user-select: none;
     }
+
+    .slot-progress {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 22px 0 14px;
+      padding: 14px 16px;
+      border: 1px solid var(--border-color, #e2e8f0);
+      border-radius: 10px;
+      background: var(--bg-card, #ffffff);
+    }
+    .slot-progress strong {
+      font-size: 15px;
+    }
+    .slot-progress span {
+      font-size: 13px;
+      color: #64748b;
+    }
+    .slot-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 14px;
+      margin-top: 16px;
+    }
+    .slot-card {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 14px;
+      border: 1px solid var(--border-color, #e2e8f0);
+      border-radius: 10px;
+      background: var(--bg-card, #ffffff);
+    }
+    .slot-card[data-status="accepted"] {
+      border-color: #16a34a;
+      box-shadow: inset 0 0 0 1px #16a34a;
+    }
+    .slot-card[data-status="rejected"],
+    .slot-card[data-status="error"] {
+      border-color: #dc2626;
+    }
+    .slot-card-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .slot-card-title {
+      font-weight: 700;
+      font-size: 14px;
+    }
+    .slot-badge {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 4px 7px;
+      border-radius: 999px;
+      background: #f1f5f9;
+      color: #475569;
+      white-space: nowrap;
+    }
+    .slot-card[data-status="accepted"] .slot-badge {
+      background: #dcfce7;
+      color: #166534;
+    }
+    .slot-card[data-status="rejected"] .slot-badge,
+    .slot-card[data-status="error"] .slot-badge {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+    .slot-card[data-status="processing"] .slot-badge {
+      background: #dbeafe;
+      color: #1d4ed8;
+    }
+    .slot-card[data-status="dirty"] {
+      border-color: #d97706;
+    }
+    .slot-card[data-status="dirty"] .slot-badge {
+      background: #fef3c7;
+      color: #92400e;
+    }
+    .slot-group-input {
+      width: 100%;
+      border: 1px solid var(--border-color, #e2e8f0);
+      border-radius: 7px;
+      padding: 9px 10px;
+      font: inherit;
+      font-size: 13px;
+      background: var(--bg-card, #ffffff);
+      color: inherit;
+    }
+    .slot-file-input {
+      width: 100%;
+      font-size: 12px;
+    }
+    .slot-file-input::file-selector-button {
+      margin-right: 8px;
+      padding: 8px 10px;
+      border: 0;
+      border-radius: 6px;
+      background: var(--primary-color, #7A1F3D);
+      color: #ffffff;
+      font: inherit;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .slot-preview {
+      display: none;
+      width: 100%;
+      height: 130px;
+      object-fit: contain;
+      border-radius: 8px;
+      background: #f8fafc;
+      cursor: zoom-in;
+    }
+    .slot-preview.visible {
+      display: block;
+    }
+    .slot-reason {
+      display: none;
+      font-size: 12px;
+      line-height: 1.5;
+      color: #991b1b;
+      background: #fef2f2;
+      border-radius: 6px;
+      padding: 8px 10px;
+    }
+    .slot-reason.visible {
+      display: block;
+    }
+    .slot-actions {
+      display: flex;
+      gap: 8px;
+    }
+    .slot-actions .btn {
+      flex: 1;
+      font-size: 12px;
+      padding: 9px 10px;
+    }
+    .slot-actions .btn[disabled] {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+    .turnstile-slot {
+      display: flex;
+      justify-content: center;
+      margin-top: 14px;
+    }
+    .turnstile-slot[hidden] {
+      display: none;
+    }
+    .finalize-bar {
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 22px;
+      padding-top: 18px;
+      border-top: 1px solid var(--border-color, #e2e8f0);
+    }
+    .finalize-bar.visible {
+      display: flex;
+    }
+    .finalize-hint {
+      font-size: 13px;
+      color: #64748b;
+      margin: 0;
+    }
+    .link-button {
+      align-self: flex-start;
+      border: 0;
+      background: none;
+      color: #7A1F3D;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: underline;
+      cursor: pointer;
+      padding: 0;
+    }
+    .share-message-panel {
+      margin: 16px 0;
+      padding: 14px 16px;
+      border: 1px solid #7A1F3D;
+      border-radius: 10px;
+      background: #fff7fa;
+    }
+    .share-message-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .share-message-head strong {
+      font-size: 14px;
+    }
+    .share-code-pill {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: #7A1F3D;
+      color: #ffffff;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+    .share-message-help {
+      margin: 0 0 10px;
+      font-size: 12px;
+      line-height: 1.6;
+      color: #64748b;
+    }
+    .share-message-text {
+      width: 100%;
+      min-height: 92px;
+      resize: vertical;
+      border: 1px solid var(--border-color, #e2e8f0);
+      border-radius: 8px;
+      padding: 10px;
+      font: inherit;
+      font-size: 13px;
+      line-height: 1.6;
+      background: #ffffff;
+      color: inherit;
+    }
+    .share-message-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 8px;
+    }
+    .share-message-actions .btn {
+      font-size: 12px;
+      padding: 8px 12px;
+    }
   </style>
 
   <script>
@@ -180,48 +419,77 @@
       <div class="register-card">
 
         <p class="register-intro">
-          Upload <strong>5 WhatsApp group screenshots</strong> and <strong>1 WhatsApp Status screenshot</strong> (6 images total).
-          <strong>&ldquo;Once verified, your Unique Training Code (UTC) will be issued&rdquo;</strong>.
+          Enter your details, then upload and verify each of the <strong>6 screenshots separately</strong>:
+          <strong>5 WhatsApp group chats</strong> and <strong>1 WhatsApp Status</strong>.
+          You can replace any screenshot that does not pass verification without re-uploading the others.
         </p>
 
         <form id="regForm" novalidate>
 
-          <div class="register-grid">
-            <div class="register-field">
-              <label class="register-label" for="fullName">Full Name</label>
-              <input class="register-input" type="text" id="fullName" name="fullName" placeholder="John Doe" required>
+          <div id="identityFields">
+            <div class="register-grid">
+              <div class="register-field">
+                <label class="register-label" for="fullName">Full Name</label>
+                <input class="register-input" type="text" id="fullName" name="fullName" placeholder="John Doe" required>
+              </div>
+
+              <div class="register-field">
+                <label class="register-label" for="email">Email Address</label>
+                <input class="register-input" type="email" id="email" name="email" placeholder="johndoe@example.com" required>
+              </div>
             </div>
 
             <div class="register-field">
-              <label class="register-label" for="email">Email Address</label>
-              <input class="register-input" type="email" id="email" name="email" placeholder="johndoe@example.com" required>
+              <label class="register-label" for="track">Training Track</label>
+              <select class="register-input" id="track" name="track" required>
+                <option value="" disabled selected>Please select your training track</option>
+                <option value="Virtual Assistance">Virtual Assistance</option>
+                <option value="Product Management">Product Management</option>
+              </select>
             </div>
           </div>
 
-          <div class="register-field">
-            <label class="register-label" for="track">Training Track</label>
-            <select class="register-input" id="track" name="track" required>
-              <option value="" disabled selected>Please select your training track</option>
-              <option value="Virtual Assistance">Virtual Assistance</option>
-              <option value="Product Management">Product Management</option>
-            </select>
-          </div>
-
-          <div class="register-upload">
-            <span class="register-upload-title">Upload Proof Screenshots (6 Files Required)</span>
-            <p class="register-upload-hint">Upload 5 WhatsApp Group screenshots first, followed by 1 WhatsApp Status screenshot. Click any thumbnail to expand.</p>
-
-            <div class="register-file-row">
-              <input type="file" id="all_screenshots" accept="image/*" multiple aria-label="Upload screenshots">
-            </div>
-
-            <div class="preview-grid" id="previewGrid"></div>
-          </div>
-
-          <div class="register-actions">
-            <button type="submit" class="btn btn-primary btn-block register-submit" id="btnSubmit">
-              Verify &amp; Submit
+          <div class="register-actions" id="startActions">
+            <button type="submit" class="btn btn-primary btn-block register-submit" id="btnStart">
+              Start Registration
             </button>
+            <div class="turnstile-slot" id="turnstileSlot" hidden></div>
+          </div>
+
+          <div id="workflow" hidden>
+            <div class="slot-progress">
+              <div>
+                <strong id="progressText">0 of 6 screenshots verified</strong>
+                <span id="progressHint">Upload each screenshot to verify it automatically.</span>
+              </div>
+              <button type="button" class="link-button" id="btnRefresh">Refresh status</button>
+            </div>
+
+            <div class="share-message-panel" id="shareMessagePanel" hidden>
+              <div class="share-message-head">
+                <strong>Your required share message</strong>
+                <span class="share-code-pill" id="shareCodeText"></span>
+              </div>
+              <p class="share-message-help">
+                Post this exact message in all 5 WhatsApp groups and on your WhatsApp Status.
+                Your unique verification code must be visible in every screenshot.
+              </p>
+              <textarea class="share-message-text" id="shareMessageText" readonly></textarea>
+              <div class="share-message-actions">
+                <button type="button" class="btn btn-primary" id="btnCopyShareMessage">Copy Message</button>
+              </div>
+            </div>
+
+            <div class="slot-grid" id="slotGrid"></div>
+
+            <div class="finalize-bar" id="finalizeBar">
+              <p class="finalize-hint" id="finalizeHint">
+                All six screenshots must be verified before your Unique Training Code can be issued.
+              </p>
+              <button type="button" class="btn btn-primary btn-block register-submit" id="btnFinalize" disabled>
+                Finalize &amp; Get My Code
+              </button>
+            </div>
           </div>
         </form>
 
@@ -256,39 +524,252 @@
     </div>
   </footer>
 
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@6.0.1/dist/tesseract.min.js"></script>
   <script>
-    let selectedFiles = [];
+    const TOKEN_KEY = 'msdshDraftToken';
+    const SLOT_DEFS = [
+      { slot: 'group1', label: 'WhatsApp Group 1', isGroup: true },
+      { slot: 'group2', label: 'WhatsApp Group 2', isGroup: true },
+      { slot: 'group3', label: 'WhatsApp Group 3', isGroup: true },
+      { slot: 'group4', label: 'WhatsApp Group 4', isGroup: true },
+      { slot: 'group5', label: 'WhatsApp Group 5', isGroup: true },
+      { slot: 'status', label: 'WhatsApp Status', isGroup: false }
+    ];
+    const MAX_IMAGE_BYTES = 1800 * 1024;
+    const STATUS_LABELS = {
+      empty: 'Not uploaded',
+      processing: 'Verifying',
+      accepted: 'Verified',
+      rejected: 'Needs replacement',
+      error: 'Try again',
+      dirty: 'Needs verification'
+    };
 
-    const fileInput = document.getElementById('all_screenshots');
-    const previewGrid = document.getElementById('previewGrid');
     const regForm = document.getElementById('regForm');
-    const btnSubmit = document.getElementById('btnSubmit');
+    const fullNameInput = document.getElementById('fullName');
+    const emailInput = document.getElementById('email');
+    const trackInput = document.getElementById('track');
+    const identityFields = document.getElementById('identityFields');
+    const startActions = document.getElementById('startActions');
+    const btnStart = document.getElementById('btnStart');
+    const turnstileSlot = document.getElementById('turnstileSlot');
+    const workflow = document.getElementById('workflow');
+    const slotGrid = document.getElementById('slotGrid');
+    const progressText = document.getElementById('progressText');
+    const progressHint = document.getElementById('progressHint');
+    const btnRefresh = document.getElementById('btnRefresh');
+    const finalizeBar = document.getElementById('finalizeBar');
+    const btnFinalize = document.getElementById('btnFinalize');
+    const finalizeHint = document.getElementById('finalizeHint');
     const responseBox = document.getElementById('response-box');
     const imageModal = document.getElementById('imageModal');
     const fullImage = document.getElementById('fullImage');
-    const DEFAULT_BUTTON_LABEL = btnSubmit ? btnSubmit.innerHTML.trim() : 'Verify & Submit';
+    const shareMessagePanel = document.getElementById('shareMessagePanel');
+    const shareCodeText = document.getElementById('shareCodeText');
+    const shareMessageText = document.getElementById('shareMessageText');
+    const btnCopyShareMessage = document.getElementById('btnCopyShareMessage');
 
-    // Compress each screenshot until it fits a per-image budget so the whole
-    // 6-image request stays under Vercel's 4.5MB body limit.
-    const MAX_IMAGE_BYTES = 450 * 1024;
+    let token = '';
+    let draft = null;
+    let slotState = {};
+    let ocrWorkerPromise = null;
+    let turnstileWidgetId = null;
+    let turnstileRequired = false;
+    let securityReady = false;
+    let turnstileScriptPromise = null;
 
-    async function compressImage(file) {
-      const dataUrl = await new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
+    try {
+      token = localStorage.getItem(TOKEN_KEY) || '';
+    } catch {
+      token = '';
+    }
+
+    function showResponse(type, headline, detail) {
+      responseBox.className = 'register-response register-response-' + type;
+      responseBox.textContent = '';
+
+      const strong = document.createElement('strong');
+      strong.textContent = headline;
+      responseBox.appendChild(strong);
+
+      if (detail) {
+        responseBox.appendChild(document.createElement('br'));
+        responseBox.appendChild(document.createTextNode(detail));
+      }
+
+      responseBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function clearResponse() {
+      responseBox.className = 'register-response';
+      responseBox.textContent = '';
+    }
+
+    function loadTurnstileScript() {
+      if (window.turnstile) return Promise.resolve();
+      if (turnstileScriptPromise) return turnstileScriptPromise;
+
+      turnstileScriptPromise = new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+        script.async = true;
+        script.defer = true;
+        script.onload = () => resolve();
+        script.onerror = () => reject(new Error('Security check script failed to load.'));
+        document.head.appendChild(script);
       });
 
+      return turnstileScriptPromise;
+    }
+
+    async function setupTurnstile() {
+      try {
+        const res = await fetch('/api/config', { cache: 'no-store' });
+        if (!res.ok) throw new Error(`Configuration request failed (HTTP ${res.status}).`);
+
+        const data = await res.json();
+        turnstileRequired = Boolean(data.turnstileRequired);
+        const siteKey = String(data.turnstileSiteKey || '').trim();
+
+        if (!turnstileRequired) {
+          securityReady = true;
+          return;
+        }
+
+        if (!siteKey) {
+          btnStart.disabled = true;
+          showResponse('error', 'Security check is not configured.', 'Please contact the organisers or try again later.');
+          return;
+        }
+
+        await loadTurnstileScript();
+        if (!window.turnstile) throw new Error('Security check is unavailable.');
+
+        turnstileSlot.hidden = false;
+        turnstileWidgetId = window.turnstile.render(turnstileSlot, {
+          sitekey: siteKey,
+          theme: 'auto',
+          appearance: 'interaction-only'
+        });
+        securityReady = true;
+      } catch (error) {
+        console.error('Unable to initialise security check:', error);
+        if (turnstileRequired) {
+          btnStart.disabled = true;
+          showResponse('error', 'Security check could not load.', 'Please refresh the page and try again.');
+          return;
+        }
+        securityReady = true;
+      }
+    }
+
+    function getTurnstileToken() {
+      if (!turnstileWidgetId || !window.turnstile) return '';
+      return String(window.turnstile.getResponse(turnstileWidgetId) || '');
+    }
+
+    function resetTurnstile() {
+      if (turnstileWidgetId && window.turnstile) {
+        window.turnstile.reset(turnstileWidgetId);
+      }
+    }
+
+    function openImageModal(url) {
+      fullImage.src = url;
+      imageModal.classList.add('active');
+    }
+
+    function closeImageModal() {
+      imageModal.classList.remove('active');
+      fullImage.src = '';
+    }
+
+    function saveToken(value) {
+      token = value || '';
+      try {
+        if (token) localStorage.setItem(TOKEN_KEY, token);
+        else localStorage.removeItem(TOKEN_KEY);
+      } catch {
+        // Storage can be unavailable in private browsing; the session still works in-memory.
+      }
+    }
+
+    function updateShareMessage(nextDraft) {
+      const code = String(nextDraft?.shareCode || '').trim();
+      const message = String(nextDraft?.shareMessage || '').trim();
+
+      if (!code || !message) {
+        shareMessagePanel.hidden = true;
+        shareCodeText.textContent = '';
+        shareMessageText.value = '';
+        return;
+      }
+
+      shareMessagePanel.hidden = false;
+      shareCodeText.textContent = code;
+      shareMessageText.value = message;
+    }
+
+    async function getOcrWorker() {
+      if (typeof Tesseract === 'undefined') {
+        throw new Error('The screenshot reader could not load. Please refresh the page and try again.');
+      }
+
+      if (!ocrWorkerPromise) {
+        ocrWorkerPromise = Tesseract.createWorker('eng').catch((error) => {
+          ocrWorkerPromise = null;
+          throw error;
+        });
+      }
+
+      return ocrWorkerPromise;
+    }
+
+    async function readScreenshotText(file) {
+      const worker = await getOcrWorker();
+      const result = await worker.recognize(file);
+      return String(result?.data?.text || '').replace(/\s+/g, ' ').trim();
+    }
+
+    async function copyShareMessage() {
+      const message = shareMessageText.value;
+      if (!message) return;
+
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(message);
+        } else {
+          shareMessageText.select();
+          document.execCommand('copy');
+          shareMessageText.setSelectionRange(0, 0);
+        }
+        showResponse('success', 'Share message copied.', 'Paste it into WhatsApp, then upload your screenshots.');
+      } catch {
+        shareMessageText.select();
+        showResponse('error', 'Could not copy automatically.', 'Select the message and copy it manually.');
+      }
+    }
+
+    function fileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+      });
+    }
+
+    async function compressImage(file) {
+      const dataUrl = await fileToBase64(file);
       const img = await new Promise((resolve, reject) => {
         const image = new Image();
         image.onload = () => resolve(image);
-        image.onerror = reject;
+        image.onerror = () => reject(new Error('Unreadable image'));
         image.src = dataUrl;
       });
 
-      let maxDim = 1200;
-      let quality = 0.72;
+      let maxDim = 1800;
+      let quality = 0.84;
       let blob = null;
 
       while (true) {
@@ -303,227 +784,489 @@
         }
 
         const canvas = document.createElement('canvas');
-        canvas.width = Math.round(width);
-        canvas.height = Math.round(height);
+        canvas.width = Math.max(1, Math.round(width));
+        canvas.height = Math.max(1, Math.round(height));
         canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
 
         blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/jpeg', quality));
 
         if (blob && blob.size <= MAX_IMAGE_BYTES) break;
-        if (quality > 0.4) {
-          quality -= 0.08;
-        } else if (maxDim > 700) {
-          maxDim = Math.round(maxDim * 0.8);
+        if (quality > 0.45) {
+          quality -= 0.07;
+        } else if (maxDim > 900) {
+          maxDim = Math.round(maxDim * 0.82);
         } else {
           break;
         }
       }
 
-      if (!blob) {
-        throw new Error('Image compression failed.');
-      }
+      if (!blob) throw new Error('Image compression failed.');
 
       return new File([blob], file.name.replace(/\.\w+$/, '') + '.jpg', {
         type: 'image/jpeg',
-        lastModified: Date.now(),
+        lastModified: Date.now()
       });
     }
 
-    fileInput.addEventListener('change', async (e) => {
-      const rawFiles = Array.from(e.target.files);
+    async function postJson(path, payload) {
+      const res = await fetch(path, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
 
-      btnSubmit.disabled = true;
-      btnSubmit.innerHTML = 'Optimizing screenshots&hellip;';
-
+      const rawBody = await res.text();
+      let data = {};
       try {
-        for (const file of rawFiles) {
-          const compressed = await compressImage(file);
-          selectedFiles.push(compressed);
-        }
-      } catch (err) {
-        showResponse('error', 'Could not read screenshot.', 'One of the selected files is not a valid image. Please try again.');
-      } finally {
-        btnSubmit.disabled = false;
-        btnSubmit.innerHTML = DEFAULT_BUTTON_LABEL;
-        updatePreview();
-        fileInput.value = '';
+        data = rawBody ? JSON.parse(rawBody) : {};
+      } catch {
+        data = {};
       }
-    });
 
-    function updatePreview() {
-      previewGrid.innerHTML = '';
+      return { res, data, rawBody };
+    }
 
-      selectedFiles.forEach((file, index) => {
-        const card = document.createElement('div');
-        card.className = 'preview-card';
+    function responseDetail(data, rawBody) {
+      if (Array.isArray(data.errors) && data.errors.length) return data.errors.join(' | ');
+      if (data.message) return data.message;
+      if (data.reason) return data.reason;
+      if (rawBody) {
+        return rawBody.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 300);
+      }
+      return 'The server did not return any details. Please try again.';
+    }
 
-        const tagLabel = index < 5 ? `Group ${index + 1}` : (index === 5 ? 'Status Share' : `Extra ${index + 1}`);
-        const objectUrl = URL.createObjectURL(file);
+    function initSlotState() {
+      slotState = {};
+      for (const def of SLOT_DEFS) {
+        slotState[def.slot] = {
+          file: null,
+          previewUrl: '',
+          groupName: '',
+          status: 'empty',
+          reason: '',
+          dirty: false,
+          processing: false
+        };
+      }
+    }
 
-        card.innerHTML = `
-          <button type="button" class="preview-remove" onclick="removeFile(event, ${index})">Delete</button>
-          <img src="${objectUrl}" alt="Preview ${index + 1}">
-          <span class="preview-tag">${tagLabel}</span>
-          <span class="preview-name">${file.name}</span>
-        `;
+    function applyDraft(nextDraft) {
+      draft = nextDraft;
+      updateShareMessage(draft);
+      const bySlot = new Map((draft.slots || []).map((slot) => [slot.slot, slot]));
 
-        card.addEventListener('click', () => openImageModal(objectUrl));
-        previewGrid.appendChild(card);
+      SLOT_DEFS.forEach((def, index) => {
+        if (!slotState[def.slot]) {
+          slotState[def.slot] = {
+            file: null,
+            previewUrl: '',
+            groupName: '',
+            status: 'empty',
+            reason: '',
+            dirty: false,
+            processing: false
+          };
+        }
+
+        const state = slotState[def.slot];
+        const serverSlot = bySlot.get(def.slot);
+        if (serverSlot) {
+          if (serverSlot.status && serverSlot.status !== 'empty') {
+            state.status = serverSlot.status;
+            state.reason = serverSlot.reason || '';
+            state.dirty = false;
+          }
+          if (serverSlot.groupName) state.groupName = serverSlot.groupName;
+        }
+
+        if (!state.groupName && def.isGroup && draft.groupNames) {
+          state.groupName = draft.groupNames[index] || '';
+        }
       });
     }
 
-    function removeFile(e, index) {
-      e.stopPropagation();
-      selectedFiles.splice(index, 1);
-      updatePreview();
+    function setIdentityLocked(locked) {
+      identityFields.querySelectorAll('input, select').forEach((el) => {
+        el.disabled = locked;
+      });
+      startActions.hidden = locked;
+      workflow.hidden = !locked;
+      finalizeBar.classList.toggle('visible', locked);
     }
 
-    function openImageModal(url) {
-      fullImage.src = url;
-      imageModal.classList.add('active');
+    function resetToStart() {
+      saveToken('');
+      draft = null;
+      initSlotState();
+      updateShareMessage(null);
+      setIdentityLocked(false);
+      slotGrid.innerHTML = '';
+      btnFinalize.disabled = true;
+      resetTurnstile();
+      clearResponse();
     }
 
-    function closeImageModal() {
-      imageModal.classList.remove('active');
-      fullImage.src = '';
+    function slotDisplayStatus(state) {
+      if (state.processing) return 'processing';
+      if (state.dirty && state.status === 'accepted') return 'dirty';
+      return state.status || 'empty';
     }
 
-    function showResponse(type, headline, detail, code) {
-      responseBox.className = 'register-response register-response-' + type;
-      responseBox.textContent = '';
+    function updateProgress() {
+      if (!draft) return;
+      const accepted = SLOT_DEFS.filter((def) => {
+        const state = slotState[def.slot];
+        return state && state.status === 'accepted' && !state.dirty;
+      }).length;
 
-      const strong = document.createElement('strong');
-      strong.textContent = headline;
-      responseBox.appendChild(strong);
-      responseBox.appendChild(document.createElement('br'));
+      progressText.textContent = `${accepted} of 6 screenshots verified`;
+      progressHint.textContent = `${draft.fullName} | ${draft.track}`;
 
-      if (detail) {
-        responseBox.appendChild(document.createTextNode(detail));
+      const allAccepted = accepted === 6;
+      btnFinalize.disabled = !allAccepted || draft.status === 'approved' || draft.status === 'finalizing';
+      finalizeHint.textContent = allAccepted
+        ? 'All six screenshots are verified. Finalize to receive your Unique Training Code.'
+        : 'All six screenshots must be verified before your Unique Training Code can be issued.';
+    }
+
+    function makeButton(label, className, onClick) {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = className;
+      button.textContent = label;
+      button.addEventListener('click', onClick);
+      return button;
+    }
+
+    async function uploadSlot(def) {
+      const state = slotState[def.slot];
+      if (!state.file) {
+        openFilePicker(def.slot);
+        return;
+      }
+      if (def.isGroup && !state.groupName.trim()) {
+        showResponse('error', 'Group name required.', 'Enter the WhatsApp group name before verifying this screenshot.');
+        return;
       }
 
-      if (code) {
-        const codeEl = document.createElement('span');
-        codeEl.className = 'register-response-code';
-        codeEl.textContent = code;
-        responseBox.appendChild(codeEl);
-      }
-
-      responseBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-
-    function setSubmitting(isSubmitting) {
-      btnSubmit.disabled = isSubmitting;
-      btnSubmit.innerHTML = isSubmitting ? 'Verifying screenshots&hellip;' : DEFAULT_BUTTON_LABEL;
-    }
-
-    async function submitRegistration() {
-      const fullName = document.getElementById('fullName').value.trim();
-      const email = document.getElementById('email').value.trim();
-      const track = document.getElementById('track').value.trim();
-
-      // Check 1: Text Fields Validation
-      if (!fullName || !email || !track) {
-        showResponse('error', 'Missing Information.', 'Please fill out your Full Name, Email Address, and Training Track.');
-        return false;
-      }
-
-      // Check 2: Screenshot Files Validation
-      if (selectedFiles.length < 6) {
-        showResponse('error', 'Missing Screenshots.', 'Please upload all screenshots: at least 5 WhatsApp groups and your WhatsApp status.');
-        return false;
-      }
-
-      setSubmitting(true);
-      responseBox.className = 'register-response';
-      responseBox.textContent = '';
+      state.processing = true;
+      state.reason = 'Reading the text in this screenshot...';
+      renderWorkflow();
 
       try {
-        const fileToBase64 = (file) => {
-          return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => resolve(reader.result);
-            reader.onerror = (error) => reject(error);
-          });
-        };
+        const compressed = await compressImage(state.file);
+        const ocrText = await readScreenshotText(compressed);
+        const image = await fileToBase64(compressed);
 
-        const group1 = await fileToBase64(selectedFiles[0]);
-        const group2 = await fileToBase64(selectedFiles[1]);
-        const group3 = await fileToBase64(selectedFiles[2]);
-        const group4 = await fileToBase64(selectedFiles[3]);
-        const group5 = await fileToBase64(selectedFiles[4]);
-        const status = await fileToBase64(selectedFiles[5]);
-
-        const payload = {
-          fullName: fullName,
-          email: email,
-          track: track,
-          group1: group1,
-          group2: group2,
-          group3: group3,
-          group4: group4,
-          group5: group5,
-          status: status
-        };
-
-        const requestBody = JSON.stringify(payload);
-
-        if (requestBody.length > 4_400_000) {
-          showResponse(
-            'error',
-            'Screenshots too large.',
-            'Your upload is larger than the 4.5MB server limit. Please retake the screenshots at a lower resolution and try again.'
-          );
-          return false;
-        }
-
-        const res = await fetch('/api/register', { 
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: requestBody
+        const { res, data, rawBody } = await postJson('/api/registration-slot', {
+          token,
+          slot: def.slot,
+          groupName: def.isGroup ? state.groupName.trim() : '',
+          image,
+          ocrText
         });
 
-        const rawBody = await res.text();
-        let data = {};
-        try {
-          data = rawBody ? JSON.parse(rawBody) : {};
-        } catch {
-          data = {};
+        state.processing = false;
+        state.file = null;
+        state.dirty = false;
+
+        if (data.slot) {
+          state.status = data.slot.status || (res.ok ? 'accepted' : 'rejected');
+          state.reason = data.slot.reason || '';
+          if (data.slot.groupName) state.groupName = data.slot.groupName;
+        } else {
+          state.status = res.ok ? 'accepted' : 'error';
+          state.reason = res.ok ? 'Screenshot verified.' : responseDetail(data, rawBody);
         }
 
         if (res.ok && data.success) {
-          if (data.redirectUrl) {
-            btnSubmit.innerHTML = 'Redirecting&hellip;';
-            window.location.assign(data.redirectUrl);
-            return;
-          }
-
-          showResponse(
-            'error',
-            'Approved, but your success page could not be opened.',
-            'Please check your email for your training code or contact support.'
-          );
+          showResponse('success', `${def.label} verified.`, 'You can now upload the next screenshot or replace this one if needed.');
         } else {
-          const rawSnippet = rawBody ? rawBody.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 300) : '';
-          const errorMsg = data.errors
-            ? data.errors.join(' | ')
-            : (data.reason || data.error || data.message || rawSnippet || 'No details returned by the server.');
-          showResponse('error', `Verification failed (HTTP ${res.status}).`, errorMsg);
+          showResponse('error', `${def.label} was not verified.`, responseDetail(data, rawBody));
         }
-      } catch (err) {
-        showResponse('error', 'Connection Error.', 'Unable to reach backend server. Please try again.');
-      } finally {
-        setSubmitting(false);
+      } catch (error) {
+        state.processing = false;
+        state.dirty = false;
+        state.status = 'error';
+        state.reason =
+          error && error.message
+            ? error.message
+            : 'Could not process this image. Please choose a clearer screenshot and try again.';
+        showResponse('error', 'Upload failed.', state.reason);
+      }
+
+      renderWorkflow();
+
+      if (draft && draft.status === 'approved' && draft.redirectUrl) {
+        window.location.assign(draft.redirectUrl);
       }
     }
 
-    if (regForm) {
-      regForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        submitRegistration();
-      });
+    function openFilePicker(slot) {
+      const input = document.querySelector(`input[data-slot-file="${slot}"]`);
+      if (input) input.click();
+    }
+
+    function renderWorkflow() {
+      if (!draft) return;
+
+      setIdentityLocked(true);
+      slotGrid.innerHTML = '';
+
+      for (const def of SLOT_DEFS) {
+        const state = slotState[def.slot];
+        const displayStatus = slotDisplayStatus(state);
+
+        const card = document.createElement('div');
+        card.className = 'slot-card';
+        card.dataset.status = displayStatus;
+
+        const head = document.createElement('div');
+        head.className = 'slot-card-head';
+
+        const title = document.createElement('span');
+        title.className = 'slot-card-title';
+        title.textContent = def.label;
+        head.appendChild(title);
+
+        const badge = document.createElement('span');
+        badge.className = 'slot-badge';
+        badge.textContent = STATUS_LABELS[displayStatus] || displayStatus;
+        head.appendChild(badge);
+        card.appendChild(head);
+
+        if (def.isGroup) {
+          const groupInput = document.createElement('input');
+          groupInput.type = 'text';
+          groupInput.className = 'slot-group-input';
+          groupInput.placeholder = 'WhatsApp group name';
+          groupInput.value = state.groupName || '';
+          groupInput.maxLength = 120;
+          groupInput.disabled = state.processing || (state.status === 'accepted' && !state.dirty);
+          groupInput.addEventListener('input', () => {
+            state.groupName = groupInput.value;
+            if (state.status === 'accepted') {
+              state.dirty = true;
+              renderWorkflow();
+            } else {
+              updateProgress();
+            }
+          });
+          card.appendChild(groupInput);
+        }
+
+        const fileInput = document.createElement('input');
+        fileInput.type = 'file';
+        fileInput.accept = 'image/*';
+        fileInput.className = 'slot-file-input';
+        fileInput.dataset.slotFile = def.slot;
+        fileInput.disabled = state.processing;
+        fileInput.addEventListener('change', () => {
+          const file = fileInput.files && fileInput.files[0];
+          if (!file) return;
+
+          if (state.previewUrl) URL.revokeObjectURL(state.previewUrl);
+          state.file = file;
+          state.previewUrl = URL.createObjectURL(file);
+          state.dirty = true;
+          state.reason = '';
+          if (state.status !== 'accepted') state.status = 'empty';
+          renderWorkflow();
+        });
+        card.appendChild(fileInput);
+
+        const preview = document.createElement('img');
+        preview.className = 'slot-preview';
+        preview.alt = `${def.label} preview`;
+        if (state.previewUrl) {
+          preview.src = state.previewUrl;
+          preview.classList.add('visible');
+          preview.addEventListener('click', () => openImageModal(state.previewUrl));
+        }
+        card.appendChild(preview);
+
+        const reason = document.createElement('div');
+        reason.className = 'slot-reason';
+        const reasonText = state.processing
+          ? 'Verifying this screenshot. This can take a few seconds.'
+          : (state.reason || '');
+        if (reasonText && displayStatus !== 'accepted') {
+          reason.textContent = reasonText;
+          reason.classList.add('visible');
+        }
+        card.appendChild(reason);
+
+        const actions = document.createElement('div');
+        actions.className = 'slot-actions';
+
+        const verifyButton = makeButton(
+          state.processing
+            ? 'Verifying...'
+            : (state.file ? 'Verify Screenshot' : 'Choose Screenshot'),
+          'btn btn-primary',
+          () => uploadSlot(def)
+        );
+        verifyButton.disabled =
+          state.processing ||
+          (!state.file && state.status === 'accepted' && !state.dirty) ||
+          (def.isGroup && !state.groupName.trim() && !state.file);
+        actions.appendChild(verifyButton);
+
+        card.appendChild(actions);
+        slotGrid.appendChild(card);
+      }
+
+      updateProgress();
+    }
+
+    async function startRegistration() {
+      const fullName = fullNameInput.value.trim();
+      const email = emailInput.value.trim();
+      const track = trackInput.value.trim();
+
+      if (!fullName || !email || !track) {
+        showResponse('error', 'Missing information.', 'Please fill out your Full Name, Email Address, and Training Track.');
+        return;
+      }
+
+      if (!securityReady) {
+        showResponse('error', 'Security check is still loading.', 'Please wait a moment and try again.');
+        return;
+      }
+
+      const turnstileToken = getTurnstileToken();
+      if (turnstileRequired && !turnstileToken) {
+        showResponse('error', 'Security check required.', 'Please complete the verification below the Start button.');
+        return;
+      }
+
+      btnStart.disabled = true;
+      btnStart.textContent = 'Starting...';
+      clearResponse();
+
+      try {
+        const { res, data, rawBody } = await postJson('/api/registration-start', {
+          fullName,
+          email,
+          track,
+          turnstileToken
+        });
+
+        if (!res.ok || !data.success) {
+          showResponse('error', `Could not start registration (HTTP ${res.status}).`, responseDetail(data, rawBody));
+          return;
+        }
+
+        saveToken(data.token);
+        initSlotState();
+        applyDraft(data.draft);
+        renderWorkflow();
+        showResponse('success', 'Registration started.', 'Upload and verify each screenshot below. You only need to replace the ones that fail.');
+        workflow.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } catch (error) {
+        showResponse('error', 'Connection error.', 'Unable to reach the registration server. Please try again.');
+      } finally {
+        resetTurnstile();
+        btnStart.disabled = false;
+        btnStart.textContent = 'Start Registration';
+      }
+    }
+
+    async function refreshStatus(showMessage = true) {
+      if (!token) return;
+
+      try {
+        const { res, data, rawBody } = await postJson('/api/registration-status', { token });
+
+        if (res.status === 401 || res.status === 404) {
+          resetToStart();
+          showResponse('error', 'Session expired.', 'Please start a new registration.');
+          return;
+        }
+
+        if (!res.ok || !data.success) {
+          if (showMessage) {
+            showResponse('error', `Could not refresh status (HTTP ${res.status}).`, responseDetail(data, rawBody));
+          }
+          return;
+        }
+
+        applyDraft(data.draft);
+        renderWorkflow();
+
+        if (data.draft.status === 'approved' && data.draft.redirectUrl) {
+          window.location.assign(data.draft.redirectUrl);
+          return;
+        }
+
+        if (showMessage) {
+          showResponse('success', 'Status refreshed.', 'Your latest verified screenshots are shown below.');
+        }
+      } catch (error) {
+        if (showMessage) {
+          showResponse('error', 'Connection error.', 'Unable to load your registration status. Please try again.');
+        }
+      }
+    }
+
+    async function finalizeRegistration() {
+      if (!token || !draft) return;
+
+      btnFinalize.disabled = true;
+      btnFinalize.textContent = 'Finalizing...';
+      clearResponse();
+
+      try {
+        const { res, data, rawBody } = await postJson('/api/registration-finalize', { token });
+
+        if (data.draft) {
+          applyDraft(data.draft);
+          renderWorkflow();
+        }
+
+        if (!res.ok || !data.success) {
+          showResponse('error', `Could not finalize (HTTP ${res.status}).`, responseDetail(data, rawBody));
+          return;
+        }
+
+        if (data.draft && data.draft.redirectUrl) {
+          btnFinalize.textContent = 'Redirecting...';
+          window.location.assign(data.draft.redirectUrl);
+          return;
+        }
+
+        showResponse(
+          'success',
+          'Registration finalized.',
+          data.emailSent === false
+            ? 'Your code is ready, but the confirmation email could not be sent. Use the success page to view your code.'
+            : 'Your Unique Training Code has been issued and your confirmation email is on its way.'
+        );
+      } catch (error) {
+        showResponse('error', 'Connection error.', 'Unable to finalize your registration. Please refresh the status and try again.');
+      } finally {
+        btnFinalize.textContent = 'Finalize & Get My Code';
+        updateProgress();
+      }
+    }
+
+    regForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      if (!draft) startRegistration();
+    });
+
+    btnRefresh.addEventListener('click', () => refreshStatus(true));
+    btnFinalize.addEventListener('click', finalizeRegistration);
+    btnCopyShareMessage.addEventListener('click', copyShareMessage);
+
+    initSlotState();
+    setupTurnstile();
+
+    if (token) {
+      refreshStatus(false);
+    } else {
+      setIdentityLocked(false);
     }
   </script>
 

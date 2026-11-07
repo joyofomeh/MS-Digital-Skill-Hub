@@ -22,8 +22,8 @@ CORS(app)
 # ---------------------------------------------------------
 REGISTRATION_OPEN = True
 
-SPREADSHEET_ID = "1FhcAi-73J0VtQWHqqnLoboRWufLflnJEl4HxFGCffz4"
-SERVICE_ACCOUNT_FILE = "credentials.json"
+SPREADSHEET_ID = os.getenv("SPREADSHEET_ID", "").strip()
+SERVICE_ACCOUNT_FILE = os.getenv("GOOGLE_APPLICATION_CREDENTIALS", "credentials.json")
 
 TRACK_CODES = {
     "Virtual Assistant": "VA",
