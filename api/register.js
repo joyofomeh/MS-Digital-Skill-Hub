@@ -152,17 +152,15 @@ export default async function handler(req, res) {
     const repeatedLabels = new Set();
     for (let left = 0; left < analyzed.length; left += 1) {
       for (let right = left + 1; right < analyzed.length; right += 1) {
-        const a = analyzed[left];
-        const b = analyzed[right];
-        const exact = a.sha256 === b.sha256;
-        const similar =
-          !exact && a.pHash && b.pHash && isSimilarPHash(a.pHash, b.pHash);
-        if (exact || similar) {
-          repeatedLabels.add(LABELS[a.key]);
-          repeatedLabels.add(LABELS[b.key]);
-        }
-      }
+      const a = analyzed[left];
+      const b = analyzed[right];
+      const exact = a.sha256 === b.sha256;
+    if (exact) {
+      repeatedLabels.add(LABELS[a.key]);
+      repeatedLabels.add(LABELS[b.key]);
     }
+  }
+}
 
     if (repeatedLabels.size) {
       const labels = [...repeatedLabels].join(", ");
