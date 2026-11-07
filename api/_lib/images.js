@@ -2,7 +2,7 @@ import sharp from "sharp";
 import { parseDataImage } from "./utils.js";
 
 const SUPPORTED_FORMATS = new Set(["jpeg", "png", "webp"]);
-const MIN_DIMENSION = 300;
+const MIN_DIMENSION = 1;
 const MAX_DIMENSION = 10000;
 const MAX_PIXELS = 40_000_000;
 const PHASH_SIZE = 32;
