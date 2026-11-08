@@ -63,11 +63,8 @@ async function saveSlot(
     {
       groupName,
       sha256: analyzed?.sha256 || "",
-      pHash: analyzed?.pHash || "",
       status,
-      reason,
-      mimeType: analyzed?.mimeType || "",
-      bytes: analyzed?.bytes || 0
+      reason
     },
     slotRows
   );
@@ -177,7 +174,6 @@ export default async function handler(req, res) {
       const imageInfo = await analyzeImagePayload(body.image);
 
       analyzed = {
-        ...imageInfo,
         sha256: sha256(imageInfo.data)
       };
     } catch (error) {
@@ -209,8 +205,6 @@ export default async function handler(req, res) {
 
     const reservation = await reserveHashRow({
       sha256: analyzed.sha256,
-      pHash: analyzed.pHash,
-      email: draft.email,
       draftId: draft.draftId,
       slot,
       ttlMs: RESERVATION_TTL_MS
@@ -224,7 +218,6 @@ export default async function handler(req, res) {
 
     const conflicts = findHashConflicts(hashRows, {
       sha256: analyzed.sha256,
-      pHash: analyzed.pHash,
       draftId: draft.draftId,
       slot
     });

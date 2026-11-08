@@ -30,7 +30,16 @@
       ]
     }
   ],
+  "crons": [
+    {
+      "path": "/api/cleanup",
+      "schedule": "0 3 * * *"
+    }
+  ],
   "functions": {
+    "api/cleanup.js": {
+      "maxDuration": 60
+    },
     "api/register.js": {
       "maxDuration": 60
     },

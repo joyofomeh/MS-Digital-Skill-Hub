@@ -65,11 +65,8 @@ async function rejectSlot(draftId, slot, reason, hashRows, slotRows) {
     {
       groupName: slot.groupName,
       sha256: slot.sha256,
-      pHash: slot.pHash,
       status: "rejected",
-      reason,
-      mimeType: slot.mimeType,
-      bytes: slot.bytes
+      reason
     },
     slotRows
   );
@@ -251,7 +248,6 @@ export default async function handler(req, res) {
 
       const conflicts = findHashConflicts(hashRows, {
         sha256: slot.sha256,
-        pHash: slot.pHash,
         draftId: draft.draftId,
         slot: key
       });

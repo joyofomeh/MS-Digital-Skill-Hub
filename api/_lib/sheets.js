@@ -207,13 +207,13 @@ export async function findDuplicateHashes(hashes) {
   return duplicates;
 }
 
-export async function recordHashes(hashes, email) {
+export async function recordHashes(hashes) {
   if (!hashes.length) return;
   const doc = await authorize();
   const sheet = getSheet(doc, "Hashes");
   await loadHeaderRowSafe(sheet, HASH_HEADERS);
   const timestamp = new Date().toISOString();
-  const payload = hashes.map((hash) => ({ Hash: hash, Timestamp: timestamp, Email: email }));
+  const payload = hashes.map((hash) => ({ Hash: hash, Timestamp: timestamp }));
 
   for (const batch of chunk(payload, 200)) {
     await sheet.addRows(batch);
@@ -602,11 +602,8 @@ export async function upsertDraftSlot(draftId, slot, data, existingRows = null) 
   const payload = {
     "Group Name": data.groupName ?? "",
     SHA256: data.sha256 ?? "",
-    PHash: data.pHash ?? "",
     Status: data.status ?? "",
     Reason: data.reason ?? "",
-    "Mime Type": data.mimeType ?? "",
-    Bytes: data.bytes ?? "",
     "Updated At": new Date().toISOString()
   };
 
@@ -684,7 +681,7 @@ export function isEarliestReservation(ourInfo, conflicts) {
   return candidates[0] === ourInfo;
 }
 
-export async function reserveHashRow({ sha256, pHash, email, draftId, slot, ttlMs = 5 * 60 * 1000 }) {
+export async function reserveHashRow({ sha256, draftId, slot, ttlMs = 5 * 60 * 1000 }) {
   const doc = await workflowDoc();
   const sheet = getSheet(doc, "Hashes");
   const now = new Date().toISOString();
@@ -693,8 +690,6 @@ export async function reserveHashRow({ sha256, pHash, email, draftId, slot, ttlM
   const row = await sheet.addRow({
     Hash: sha256,
     Timestamp: now,
-    Email: email,
-    PHash: pHash,
     Slot: slot,
     "Draft ID": draftId,
     Status: "pending",
@@ -707,6 +702,148 @@ export async function reserveHashRow({ sha256, pHash, email, draftId, slot, ttlM
 export async function updateHashRow(row, { status, expiresAt = "" }) {
   row.assign({ Status: status, "Expires At": expiresAt });
   await row.save();
+}
+
+export const HASH_RETENTION_DAYS = 90;
+export const HASH_RETENTION_MS = HASH_RETENTION_DAYS * 24 * 60 * 60 * 1000;
+const MAX_HASH_ROWS_PER_CLEANUP = 1000;
+
+export function hashRetentionDecision(
+  info,
+  nowMs = Date.now(),
+  retentionMs = HASH_RETENTION_MS
+) {
+  if (!info?.hash) {
+    return { remove: false, reason: "missing-fingerprint" };
+  }
+
+  if (info.status === "pending") {
+    const expiresAt = timestampMs(info.expiresAt);
+    if (expiresAt && expiresAt <= nowMs) {
+      return { remove: true, reason: "expired-pending-reservation" };
+    }
+    return { remove: false, reason: "active-pending-reservation" };
+  }
+
+  const createdAt = timestampMs(info.timestamp);
+  if (!createdAt) {
+    return { remove: false, reason: "invalid-timestamp" };
+  }
+
+  if (createdAt <= nowMs - retentionMs) {
+    return { remove: true, reason: "retention-expired" };
+  }
+
+  return { remove: false, reason: "retained" };
+}
+
+function buildContiguousRowRanges(rowNumbers) {
+  const sorted = [...new Set(rowNumbers)].sort((left, right) => left - right);
+  const ranges = [];
+
+  for (const rowNumber of sorted) {
+    const last = ranges[ranges.length - 1];
+    if (last && rowNumber === last.end + 1) {
+      last.end = rowNumber;
+    } else {
+      ranges.push({ start: rowNumber, end: rowNumber });
+    }
+  }
+
+  return ranges;
+}
+
+async function deleteRowsByNumber(sheet, rows) {
+  if (!rows.length) return "none";
+
+  const rowNumbers = rows.map((row) => row.rowNumber);
+  const ranges = buildContiguousRowRanges(rowNumbers).sort(
+    (left, right) => right.start - left.start
+  );
+
+  if (typeof sheet._makeBatchUpdateRequest === "function") {
+    const requests = ranges.map(({ start, end }) => ({
+      deleteDimension: {
+        range: {
+          sheetId: sheet.sheetId,
+          dimension: "ROWS",
+          startIndex: start - 1,
+          endIndex: end
+        }
+      }
+    }));
+
+    await sheet._makeBatchUpdateRequest(requests);
+    return "batch";
+  }
+
+  const rowsByNumber = new Map(rows.map((row) => [row.rowNumber, row]));
+  const descending = [...rowNumbers].sort((left, right) => right - left);
+
+  for (const rowNumber of descending) {
+    await rowsByNumber.get(rowNumber).delete();
+  }
+
+  return "single";
+}
+
+export async function cleanupExpiredHashRows({
+  now = new Date(),
+  retentionMs = HASH_RETENTION_MS,
+  maxDelete = MAX_HASH_ROWS_PER_CLEANUP
+} = {}) {
+  const doc = await workflowDoc();
+  const sheet = getSheet(doc, "Hashes");
+  const rows = await sheet.getRows();
+  const nowMs = now.getTime();
+
+  const stats = {
+    scanned: rows.length,
+    deleted: 0,
+    deferred: 0,
+    expiredPending: 0,
+    retentionExpired: 0,
+    retained: 0,
+    skipped: 0,
+    deleteMode: "none"
+  };
+
+  const rowsToDelete = [];
+
+  for (const row of rows) {
+    const decision = hashRetentionDecision(
+      hashRowInfo(row),
+      nowMs,
+      retentionMs
+    );
+
+    if (!decision.remove) {
+      if (decision.reason === "retained") {
+        stats.retained += 1;
+      } else {
+        stats.skipped += 1;
+      }
+      continue;
+    }
+
+    if (rowsToDelete.length >= maxDelete) {
+      stats.deferred += 1;
+      continue;
+    }
+
+    rowsToDelete.push(row);
+
+    if (decision.reason === "expired-pending-reservation") {
+      stats.expiredPending += 1;
+    } else {
+      stats.retentionExpired += 1;
+    }
+  }
+
+  stats.deleteMode = await deleteRowsByNumber(sheet, rowsToDelete);
+  stats.deleted = rowsToDelete.length;
+
+  return stats;
 }
 
 export async function acquireLock(key, token, ttlMs = 60 * 1000) {

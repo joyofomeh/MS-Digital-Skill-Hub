@@ -149,8 +149,7 @@ export default async function handler(req, res) {
 
       analyzed.push({
         key,
-        sha256: sha256(imageInfo.data),
-        pHash: imageInfo.pHash
+        sha256: sha256(imageInfo.data)
       });
     }
 
@@ -207,8 +206,6 @@ export default async function handler(req, res) {
     for (const item of analyzed) {
       const reservation = await reserveHashRow({
         sha256: item.sha256,
-        pHash: item.pHash,
-        email,
         draftId: submissionId,
         slot: item.key,
         ttlMs: RESERVATION_TTL_MS
@@ -224,7 +221,6 @@ export default async function handler(req, res) {
     for (const reservation of reservations) {
       const conflicts = findHashConflicts(hashRows, {
         sha256: reservation.item.sha256,
-        pHash: reservation.item.pHash,
         draftId: submissionId,
         slot: reservation.item.key
       });

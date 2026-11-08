@@ -239,3 +239,44 @@ export async function sendWelcomeEmail({ email, fullName, track, code, expires }
 
   await transporter.sendMail(mailOptions);
 }
+
+export async function sendCleanupAlert({ subject, summary, error }) {
+  const to = String(
+    process.env.CLEANUP_ALERT_EMAIL || process.env.MAIL_USERNAME || ""
+  ).trim();
+
+  if (!to || !process.env.MAIL_USERNAME || !process.env.MAIL_PASSWORD) {
+    return false;
+  }
+
+  const transporter = nodemailer.createTransport({
+    host: "smtp.zoho.com",
+    port: 587,
+    secure: false,
+    auth: {
+      user: process.env.MAIL_USERNAME,
+      pass: process.env.MAIL_PASSWORD
+    },
+    connectionTimeout: 10_000,
+    greetingTimeout: 10_000,
+    socketTimeout: 15_000
+  });
+
+  const details = [summary, error ? `Error: ${error}` : ""]
+    .filter(Boolean)
+    .join("\n\n");
+
+  await transporter.sendMail({
+    from: '"MS Digital Skill Hub" <info@msdigitalskillhub.com.ng>',
+    to,
+    subject: subject || "Screenshot cleanup alert - MS Digital Skill Hub",
+    text: details,
+    html: `<div style="font-family:Arial,Helvetica,sans-serif; color:#111; line-height:1.6;">
+      <h2 style="margin:0 0 16px; color:#7A1F3D;">Screenshot cleanup alert</h2>
+      <p style="margin:0 0 12px; white-space:pre-wrap;">${escapeHtml(summary)}</p>
+      ${error ? `<pre style="margin:0; padding:12px; background:#f5f5f5; border:1px solid #ddd; white-space:pre-wrap;">${escapeHtml(error)}</pre>` : ""}
+    </div>`
+  });
+
+  return true;
+}
