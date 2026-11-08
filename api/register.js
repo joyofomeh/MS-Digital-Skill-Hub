@@ -19,6 +19,7 @@ import {
 } from "./_lib/images.js";
 import { sendWelcomeEmail } from "./_lib/mailer.js";
 import { createSuccessToken } from "./_lib/tokens.js";
+import { verifyWhatsAppProof } from "./_lib/local-verify.js";
 import { checkRateLimit, clientIpHash } from "./_lib/request-guard.js";
 import {
   ALL_IMAGE_KEYS,
@@ -82,6 +83,10 @@ export default async function handler(req, res) {
   const trackName = String(body.track ?? "").trim();
   const fullName = String(body.fullName ?? body.full_name ?? "").trim();
   const email = String(body.email ?? "").trim().toLowerCase();
+  const ocrTexts =
+    body.ocrTexts && typeof body.ocrTexts === "object" && !Array.isArray(body.ocrTexts)
+      ? body.ocrTexts
+      : {};
 
   const validationErrors = [];
 
@@ -170,6 +175,19 @@ export default async function handler(req, res) {
           "You uploaded the exact same screenshot more than once. Each of the 6 screenshots must be different.",
         duplicateImages: [...repeatedLabels].join(", ")
       });
+    }
+
+    const verificationWarnings = [];
+
+    for (const item of analyzed) {
+      const verdict = verifyWhatsAppProof({
+        slot: item.key,
+        text: ocrTexts[item.key]
+      });
+
+      if (!verdict.valid) {
+        verificationWarnings.push(`${LABELS[item.key]}: ${verdict.reason}`);
+      }
     }
 
     const track = await findTrack(trackName);
@@ -264,7 +282,9 @@ export default async function handler(req, res) {
         status: "Approved",
         groupResults: GROUP_IMAGE_KEYS.map(() => "OK"),
         statusResult: "OK",
-        aiNotes: "Registration submitted. Exact duplicate screenshot checks passed.",
+        aiNotes: verificationWarnings.length
+          ? `Approved with OCR flags: ${verificationWarnings.join(" | ")}`
+          : "OCR and exact duplicate screenshot checks passed.",
         attempt,
         expires
       });

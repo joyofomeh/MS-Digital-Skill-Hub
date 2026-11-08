@@ -33,26 +33,55 @@ function findDuplicateGroup(normalizedText, otherGroupNames) {
     .find((name) => normalizedText.includes(name));
 }
 
-export function verifyLegacyText(text) {
+const GROUP_HINTS = [
+  "whatsapp",
+  "group",
+  "group info",
+  "tap to view group info",
+  "online",
+  "typing",
+  "members",
+  "admin"
+];
+
+const STATUS_HINTS = [
+  "whatsapp",
+  "status",
+  "my status",
+  "viewed by",
+  "recent updates",
+  "recent update"
+];
+
+export function verifyWhatsAppProof({ slot, text }) {
   const raw = String(text || "").trim();
 
   if (raw.length < MIN_TEXT_LENGTH) {
     return {
       valid: false,
-      reason:
-        "We could not read enough text from this screenshot. Please upload a clearer, uncropped screenshot."
+      reason: "We could not read enough text from this screenshot."
     };
   }
 
   if (!hasBrand(raw)) {
     return {
       valid: false,
-      reason:
-        "The MS Digital Skill Hub share message was not found in this screenshot. Please upload the screenshot showing the shared message."
+      reason: "The MS Digital Skill Hub share message was not found."
     };
   }
 
-  return { valid: true, reason: "Screenshot verified." };
+  const normalized = normalizeText(raw);
+  const hints = GROUP_IMAGE_KEYS.includes(slot) ? GROUP_HINTS : STATUS_HINTS;
+  const hasWhatsAppCue = hints.some((hint) => normalized.includes(hint));
+
+  if (!hasWhatsAppCue) {
+    return {
+      valid: false,
+      reason: "We could not detect a WhatsApp group/status cue."
+    };
+  }
+
+  return { valid: true, reason: "Screenshot looks like a WhatsApp share." };
 }
 
 export function verifySlotText({
