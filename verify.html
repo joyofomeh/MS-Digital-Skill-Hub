@@ -484,9 +484,8 @@
        ========================================================== */
 
     const VERIFICATION_CONFIG = {
-      sheetCsvUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTzxRHw92W7eSKtAaHkumg-joGwJa0wyv0CVShtZgECPvaS_w5cV0_NZaP1YmP67Jr0NdbLQ2T85zdN/pub?gid=0&single=true&output=csv',
-      autoVerifyFromUrl: true,
-      requestTimeoutMs: 30000
+      apiUrl: '/api/verify',
+      autoVerifyFromUrl: true
     };
 
     const verifyForm = document.getElementById('verifyForm');
@@ -527,7 +526,7 @@
     }
 
     function isRegistryConfigured() {
-      const endpoint = VERIFICATION_CONFIG.sheetCsvUrl;
+      const endpoint = VERIFICATION_CONFIG.apiUrl;
       return typeof endpoint === 'string' && endpoint.trim() !== '';
     }
 
@@ -544,48 +543,40 @@
       });
     }
 
-    /* ---------- Direct CSV Lookup Engine ---------- */
+    /* ---------- Certificate lookup via API ---------- */
 
     async function requestCertificate(certificateId) {
-      const response = await fetch(VERIFICATION_CONFIG.sheetCsvUrl, { cache: 'no-store' });
+      const url = VERIFICATION_CONFIG.apiUrl + '?id=' + encodeURIComponent(certificateId);
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: { 'Accept': 'application/json' },
+        cache: 'no-store'
+      });
 
-      if (!response.ok) {
+      let payload = null;
+      try {
+        payload = await response.json();
+      } catch (e) {
         throw new Error('lookup_failed');
       }
 
-      const csvText = await response.text();
-
-      // Split rows handling commas inside quotes
-      const rows = csvText.split('\n').map(row => {
-        return row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-      });
-
-      const clean = (val) => val ? val.replace(/^["\s]+|["\r\n\s]+$/g, '') : '';
-      const targetId = clean(certificateId).toLowerCase();
-
-      let matchedRow = null;
-
-      // Search through rows starting from row 2 (index 1)
-      for (let i = 1; i < rows.length; i++) {
-        const rowId = clean(rows[i][0]).toLowerCase();
-        if (rowId === targetId) {
-          matchedRow = rows[i];
-          break;
-        }
+      if (!response.ok || payload.success === false) {
+        throw new Error('lookup_failed');
       }
 
-      if (!matchedRow) {
+      if (!payload.found || !payload.certificate) {
         return null;
       }
 
+      const cert = payload.certificate;
       return {
-        certificateId: clean(matchedRow[0]),
-        fullName: clean(matchedRow[1]),
-        program: clean(matchedRow[2]),
-        completionDate: formatDate(clean(matchedRow[3])),
-        dateOfIssue: formatDate(clean(matchedRow[4])),
-        status: clean(matchedRow[5]) || 'Valid',
-        trainingLevel: clean(matchedRow[7])
+        certificateId: cert.certificateId || '',
+        fullName: cert.fullName || '',
+        program: cert.program || '',
+        completionDate: formatDate(cert.completionDate),
+        dateOfIssue: formatDate(cert.dateOfIssue),
+        status: cert.status || 'Valid',
+        trainingLevel: cert.trainingLevel || ''
       };
     }
 
